@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+# Local builds and config
+build/
+.dolphin
+.vscode/
+bin/
