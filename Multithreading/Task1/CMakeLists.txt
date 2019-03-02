@@ -15,10 +15,13 @@ include_directories(${CURSES_INCLUDE_DIRS})
 
 set(HEADERS
     ${CMAKE_SOURCE_DIR}/include/ball.hpp
+    ${CMAKE_SOURCE_DIR}/include/window.hpp
+    ${CMAKE_SOURCE_DIR}/include/direction.hpp
 )
 
 set(SOURCES
     ${CMAKE_SOURCE_DIR}/src/main.cpp
+    ${CMAKE_SOURCE_DIR}/src/window.cpp
     ${CMAKE_SOURCE_DIR}/src/ball.cpp)
 
 add_executable(${PROJECT_NAME} ${SOURCES} #${HEADERS}

@@ -10,17 +10,16 @@ class Ball
     Ball(float, std::shared_ptr<WINDOW>, Direction dir);
     Ball& operator=(const Ball& rhs) = delete;
     Ball(const Ball& ball)           = delete;
-    Ball& operator=(Ball&& rhs) = default;
-    Ball(Ball&& ball)           = default;
+    Ball& operator=(Ball&& rhs) noexcept = default;
+    Ball(Ball&& ball) noexcept           = default;
     ~Ball();
 
-    void move(const Direction&);
-    void move_random();
+    void move();
     void idle_func();
 
    private:
-    float speed;
-    Direction direction;
-    std::shared_ptr<WINDOW> window;
-    std::thread t;
+    float speed_;
+    Direction direction_;
+    std::shared_ptr<WINDOW> window_;
+    std::thread t_;
 };

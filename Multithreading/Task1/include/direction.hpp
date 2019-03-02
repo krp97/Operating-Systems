@@ -14,9 +14,9 @@ class Direction
     Direction(short_pair direction) : direction_ {direction} {}
     Direction(const Direction&) = default;
     Direction& operator=(const Direction&) = default;
-    Direction(Direction&&)                 = default;
-    Direction& operator=(Direction&&) = default;
-    ~Direction()                      = default;
+    Direction(Direction&&) noexcept        = default;
+    Direction& operator=(Direction&&) noexcept = default;
+    ~Direction()                               = default;
 
     void reflect(const short_pair& reflection)
     {
