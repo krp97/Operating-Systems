@@ -9,8 +9,11 @@ endif()
 
 project(mt1 DESCRIPTION "Multithreading Task 1" LANGUAGES CXX)
 
+set(THREADS_PREFER_PTHREAD_FLAG ON)
 set(CURSES_USE_NCURSES TRUE)
 find_package(Curses REQUIRED)
+find_package(Threads REQUIRED)
+
 include_directories(${CURSES_INCLUDE_DIRS})
 
 set(HEADERS
@@ -24,8 +27,7 @@ set(SOURCES
     ${CMAKE_SOURCE_DIR}/src/window.cpp
     ${CMAKE_SOURCE_DIR}/src/ball.cpp)
 
-add_executable(${PROJECT_NAME} ${SOURCES} #${HEADERS}
-)
+add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 
 
 set_target_properties(${PROJECT_NAME}
@@ -35,3 +37,4 @@ set_target_properties(${PROJECT_NAME}
                                  ON)
 
 target_link_libraries(${PROJECT_NAME} ${CURSES_LIBRARY})
+target_link_libraries(${PROJECT_NAME} Threads::Threads)

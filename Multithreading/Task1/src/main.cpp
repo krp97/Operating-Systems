@@ -4,6 +4,6 @@
 int main(int argc, char** argv)
 {
     Window win = Window();
-    getchar();
+    win.release_the_hounds();
     return 0;
 }

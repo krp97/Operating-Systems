@@ -1,25 +1,32 @@
 #include <ncurses.h>
+#include <chrono>
 #include <functional>
+#include <mutex>
 #include <thread>
 #include "direction.hpp"
 
 class Ball
 {
    public:
-    Ball() = default;
-    Ball(float, std::shared_ptr<WINDOW>, Direction dir);
+    Ball() = delete;
+    Ball(std::chrono::milliseconds cooldown_ms, WINDOW*, Direction dir);
     Ball& operator=(const Ball& rhs) = delete;
     Ball(const Ball& ball)           = delete;
     Ball& operator=(Ball&& rhs) noexcept = default;
     Ball(Ball&& ball) noexcept           = default;
     ~Ball();
 
-    void move();
-    void idle_func();
+    static void idle_func(std::chrono::milliseconds, WINDOW*,
+                          Direction& direction);
 
    private:
-    float speed_;
+    bool stop_request_;
+    std::chrono::milliseconds speed_;
     Direction direction_;
-    std::shared_ptr<WINDOW> window_;
-    std::thread t_;
+    WINDOW* window_;
+
+    std::thread thread_;
+    static std::mutex mtx_;
+
+    static void move(std::chrono::milliseconds, WINDOW*, Direction& direction);
 };
