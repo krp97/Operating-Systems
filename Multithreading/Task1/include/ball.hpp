@@ -16,8 +16,8 @@ class Ball
     Ball(Ball&& ball) noexcept           = default;
     ~Ball();
 
-    static void idle_func(std::chrono::milliseconds, WINDOW*,
-                          Direction& direction);
+    void idle_func();
+    void request_stop();
 
    private:
     bool stop_request_;
@@ -27,6 +27,9 @@ class Ball
 
     std::thread thread_;
     static std::mutex mtx_;
+    std::pair<unsigned, unsigned> coords;
 
-    static void move(std::chrono::milliseconds, WINDOW*, Direction& direction);
+    void move(WINDOW*, Direction& direction);
+    void update_coords();
+    void update_direction();
 };
