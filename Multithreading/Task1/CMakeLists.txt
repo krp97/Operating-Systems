@@ -25,6 +25,7 @@ set(HEADERS
 set(SOURCES
     ${CMAKE_SOURCE_DIR}/src/main.cpp
     ${CMAKE_SOURCE_DIR}/src/window.cpp
+    ${CMAKE_SOURCE_DIR}/src/direction.cpp
     ${CMAKE_SOURCE_DIR}/src/ball.cpp)
 
 add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})

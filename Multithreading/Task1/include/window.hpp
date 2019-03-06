@@ -1,3 +1,5 @@
+#pragma once
+
 #include <ncurses.h>
 #include <chrono>
 #include <iostream>
@@ -22,7 +24,8 @@ class Window
 
    private:
     WINDOW* window_;
+    bool shutdown_flag_;
     std::vector<std::unique_ptr<Ball>> balls;
-
+    std::thread key_thread_;
     void stop_all();
 };

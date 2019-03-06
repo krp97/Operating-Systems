@@ -1,19 +1,21 @@
 #include "../include/window.hpp"
 
-Window::Window()
+Window::Window() : shutdown_flag_ {false}
 {
     initscr();
     int term_width  = getmaxx(stdscr);
     int term_height = getmaxy(stdscr);
     window_         = newwin(term_height, term_width, 0, 0);
     box(window_, 0, 0);
+    curs_set(0);
     wrefresh(window_);
-    keypad(window_, TRUE);
 }
 
 Window::Window(int h_lines, int v_lines, int x_start, int y_start)
+    : shutdown_flag_ {false}
 {
     initscr();
+    curs_set(0);
     window_ = newwin(v_lines, h_lines, x_start, y_start);
     box(window_, 0, 0);
     wrefresh(window_);
@@ -39,10 +41,8 @@ Window::Window(Window&& other)
 
 void Window::release_the_hounds()
 {
-    while (true)
+    while (!shutdown_flag_)
     {
-        // wgetch(window_); ?? different thread to monitor keys in the
-        // background
         balls.push_back(std::unique_ptr<Ball>(new Ball(
             std::chrono::milliseconds(40), window_, Direction({1, 1}))));
         std::this_thread::sleep_for(std::chrono::seconds(5));
