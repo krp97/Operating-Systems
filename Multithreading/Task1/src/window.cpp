@@ -44,7 +44,7 @@ void Window::release_the_hounds()
     while (!shutdown_flag_)
     {
         balls.push_back(std::unique_ptr<Ball>(new Ball(
-            std::chrono::milliseconds(40), window_, Direction({1, 1}))));
+            std::chrono::milliseconds(40), window_)));
         std::this_thread::sleep_for(std::chrono::seconds(5));
     }
 }

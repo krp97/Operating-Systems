@@ -1,6 +1,7 @@
 #pragma once
 
 #include <functional>
+#include <random>
 
 class Direction
 {
@@ -18,6 +19,7 @@ class Direction
     Direction& operator=(Direction&&) noexcept = default;
     ~Direction()                               = default;
 
+    static Direction random_direction();
     void reflect(const std::pair<short, short>& reflection);
 
     short get_x() { return direction_.first; }
@@ -26,25 +28,3 @@ class Direction
    private:
     std::pair<short, short> direction_;
 };
-
-/*
-// If you hit the wall on the left or right -> horizontal, that includes the
-following:
-|/ -1 -1
-|\ 1 -1
-|----------------------------------
-// If you hit the wall on the top or the bottom -> vertical
--------------------
-    /   \
-   1 1  1 -1
-------------------------------------
-// If you hit a corner then do both, so
-
-if(crossed left || crossed right)
-    reflect horizontally
-if(crossed top || crossed bottom)
-    reflect vertically
-
--> Store the temp before reflecting, so you can adjust for both reflections and
-you good.
-*/

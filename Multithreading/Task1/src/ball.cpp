@@ -3,10 +3,10 @@
 
 std::mutex Ball::mtx_ = std::mutex();
 
-Ball::Ball(std::chrono::milliseconds speed, WINDOW* window, Direction direction)
+Ball::Ball(std::chrono::milliseconds speed, WINDOW* window)
     : speed_ {speed},
       window_ {window},
-      direction_ {direction},
+      direction_{Direction::random_direction()},
       stop_request_ {false}
 {
     thread_ = std::thread([&]() { idle_func(); });
@@ -40,11 +40,11 @@ void Ball::update_direction()
         direction_.reflect(Direction::vertical);
 }
 
-void Ball::request_stop() { stop_request_ = true; }
+void Ball::request_stop() { stop_request_.store(true); }
 
 void Ball::idle_func()
 {
-    while (!stop_request_)
+    while (!stop_request_.load())
     {
         move(window_, direction_);
         std::this_thread::sleep_for(speed_);
