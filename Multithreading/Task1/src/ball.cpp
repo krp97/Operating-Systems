@@ -13,23 +13,23 @@ Ball::Ball(std::chrono::milliseconds speed, WINDOW* window)
     coords  = {window_->_maxx / 3, window_->_maxy / 2};
 }
 
-void Ball::move(WINDOW* window, Direction& direction)
+void Ball::idle_func()
+{
+    while (!stop_request_.load())
+    {
+        move();
+        std::this_thread::sleep_for(speed_);
+    }
+}
+
+void Ball::request_stop() { stop_request_.store(true); }
+
+void Ball::move()
 {
     auto prev_coords = coords;
     update_direction();
     update_coords();
-
-    Ball::mtx_.lock();
-    mvwprintw(window_, prev_coords.second, prev_coords.first, " ");
-    mvwprintw(window_, coords.second, coords.first, "*");
-    wrefresh(window_);
-    Ball::mtx_.unlock();
-}
-
-void Ball::update_coords()
-{
-    coords.first += direction_.get_x();
-    coords.second += direction_.get_y();
+    move_on_screen(prev_coords);
 }
 
 void Ball::update_direction()
@@ -40,15 +40,19 @@ void Ball::update_direction()
         direction_.reflect(Direction::vertical);
 }
 
-void Ball::request_stop() { stop_request_.store(true); }
-
-void Ball::idle_func()
+void Ball::update_coords()
 {
-    while (!stop_request_.load())
-    {
-        move(window_, direction_);
-        std::this_thread::sleep_for(speed_);
-    }
+    coords.first += direction_.get_x();
+    coords.second += direction_.get_y();
+}
+
+void Ball::move_on_screen(std::pair<unsigned, unsigned>& prev_coords)
+{
+    Ball::mtx_.lock();
+    mvwprintw(window_, prev_coords.second, prev_coords.first, " ");
+    mvwprintw(window_, coords.second, coords.first, "*");
+    wrefresh(window_);
+    Ball::mtx_.unlock();
 }
 
 Ball::~Ball() { thread_.join(); }

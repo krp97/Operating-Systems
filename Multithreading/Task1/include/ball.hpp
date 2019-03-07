@@ -32,7 +32,8 @@ class Ball
     static std::mutex mtx_;
     std::pair<unsigned, unsigned> coords;
 
-    void move(WINDOW*, Direction& direction);
+    void move();
     void update_coords();
     void update_direction();
+    void move_on_screen(std::pair<unsigned, unsigned>& prev_coords);
 };

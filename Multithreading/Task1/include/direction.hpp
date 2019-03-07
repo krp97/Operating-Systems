@@ -6,10 +6,9 @@
 class Direction
 {
    public:
-    // Possible vector reflections when moving in a box.
+    // Possible vector reflections when moving in a box (both if bounced off of a corner).
     static std::pair<short, short> vertical;
     static std::pair<short, short> horizontal;
-    static std::pair<short, short> diagonal;
 
     Direction() = delete;
     Direction(std::pair<short, short> direction) : direction_ {direction} {}

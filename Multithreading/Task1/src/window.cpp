@@ -3,12 +3,15 @@
 Window::Window() : shutdown_flag_ {false}
 {
     initscr();
+    curs_set(0);
     int term_width  = getmaxx(stdscr);
     int term_height = getmaxy(stdscr);
     window_         = newwin(term_height, term_width, 0, 0);
     box(window_, 0, 0);
-    curs_set(0);
     wrefresh(window_);
+    key_watcher_ = std::thread([&](){
+        pressed_exit();
+    });
 }
 
 Window::Window(int h_lines, int v_lines, int x_start, int y_start)
@@ -41,16 +44,36 @@ Window::Window(Window&& other)
 
 void Window::release_the_hounds()
 {
-    while (!shutdown_flag_)
+    while (!shutdown_flag_.load())
     {
         balls.push_back(std::unique_ptr<Ball>(new Ball(
             std::chrono::milliseconds(40), window_)));
-        std::this_thread::sleep_for(std::chrono::seconds(5));
+        wait_n_check_shutdwn(std::chrono::milliseconds(5000));
     }
+}
+
+void Window::wait_n_check_shutdwn(std::chrono::milliseconds wait_time)
+{
+    auto start = std::chrono::high_resolution_clock::now();
+    auto end = start;
+    auto duration = std::chrono::duration<double>(end - start);
+    while(!shutdown_flag_.load() && duration < wait_time)
+    {
+        end = std::chrono::high_resolution_clock::now();
+        duration = std::chrono::duration<double>(end - start);
+    }
+}
+
+void Window::pressed_exit()
+{
+    int ch = getch();
+    if (ch == 27) // 27 - code for esc key
+        shutdown_flag_.store(true);
 }
 
 void Window::stop_all()
 {
+    key_watcher_.join();
     for (auto& ball : balls)
         ball->request_stop();
 }
