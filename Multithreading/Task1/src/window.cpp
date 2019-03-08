@@ -7,11 +7,11 @@ Window::Window() : shutdown_flag_ {false}
     int term_width  = getmaxx(stdscr);
     int term_height = getmaxy(stdscr);
     window_         = newwin(term_height, term_width, 0, 0);
-    box(window_, 0, 0);
-    wrefresh(window_);
     key_watcher_ = std::thread([&](){
-        pressed_exit();
+      pressed_exit();
     });
+    wrefresh(window_);
+
 }
 
 Window::Window(int h_lines, int v_lines, int x_start, int y_start)
@@ -20,7 +20,6 @@ Window::Window(int h_lines, int v_lines, int x_start, int y_start)
     initscr();
     curs_set(0);
     window_ = newwin(v_lines, h_lines, x_start, y_start);
-    box(window_, 0, 0);
     wrefresh(window_);
 }
 
@@ -66,9 +65,16 @@ void Window::wait_n_check_shutdwn(std::chrono::milliseconds wait_time)
 
 void Window::pressed_exit()
 {
-    int ch = getch();
-    if (ch == 27) // 27 - code for esc key
-        shutdown_flag_.store(true);
+    int ch;
+    while(true)
+    {
+        ch = getch();
+        if (ch == 27) // 27 - code for esc key
+        {
+            shutdown_flag_.store(true);
+            break;
+        }
+    }
 }
 
 void Window::stop_all()
