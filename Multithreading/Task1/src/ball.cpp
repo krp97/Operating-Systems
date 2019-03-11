@@ -51,6 +51,7 @@ void Ball::move_on_screen(std::pair<unsigned, unsigned>& prev_coords)
     Ball::mtx_.lock();
     mvwprintw(window_, prev_coords.second, prev_coords.first, " ");
     mvwprintw(window_, coords.second, coords.first, "⚫");
+    box(window_, 0, 0);
     wrefresh(window_);
     Ball::mtx_.unlock();
 }

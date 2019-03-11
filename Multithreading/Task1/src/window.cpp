@@ -7,11 +7,8 @@ Window::Window() : shutdown_flag_ {false}
     int term_width  = getmaxx(stdscr);
     int term_height = getmaxy(stdscr);
     window_         = newwin(term_height, term_width, 0, 0);
-    key_watcher_ = std::thread([&](){
-      pressed_exit();
-    });
+    box(window_, 0, 0);
     wrefresh(window_);
-
 }
 
 Window::Window(int h_lines, int v_lines, int x_start, int y_start)
@@ -20,6 +17,7 @@ Window::Window(int h_lines, int v_lines, int x_start, int y_start)
     initscr();
     curs_set(0);
     window_ = newwin(v_lines, h_lines, x_start, y_start);
+    box(window_, 0, 0);
     wrefresh(window_);
 }
 
@@ -43,10 +41,14 @@ Window::Window(Window&& other)
 
 void Window::release_the_hounds()
 {
+    key_watcher_ = std::thread([&](){
+      pressed_exit();
+    });
+
     while (!shutdown_flag_.load())
     {
         balls.push_back(std::unique_ptr<Ball>(new Ball(
-            std::chrono::milliseconds(40), window_)));
+            std::chrono::milliseconds(30), window_)));
         wait_n_check_shutdwn(std::chrono::milliseconds(5000));
     }
 }
@@ -65,16 +67,8 @@ void Window::wait_n_check_shutdwn(std::chrono::milliseconds wait_time)
 
 void Window::pressed_exit()
 {
-    int ch;
-    while(true)
-    {
-        ch = getch();
-        if (ch == 27) // 27 - code for esc key
-        {
-            shutdown_flag_.store(true);
-            break;
-        }
-    }
+    while(getch() != 27);   // 27 - key code for "esc"
+    shutdown_flag_.store(true);
 }
 
 void Window::stop_all()

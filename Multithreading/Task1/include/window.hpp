@@ -22,7 +22,6 @@ class Window
     ~Window();
 
     void release_the_hounds();
-    
 
    private:
     WINDOW* window_;

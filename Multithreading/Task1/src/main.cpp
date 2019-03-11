@@ -5,7 +5,7 @@
 int main(int argc, char** argv)
 {
     setlocale(LC_ALL, "");
-    nodelay(stdscr, TRUE);
+    nodelay(stdscr, 0);
     Window win = Window();
     win.release_the_hounds();
     return 0;
