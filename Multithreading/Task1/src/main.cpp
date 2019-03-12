@@ -1,12 +1,11 @@
+#include <locale.h>
 #include <ncurses.h>
 #include "../include/window.hpp"
-#include <locale.h>
 
 int main(int argc, char** argv)
 {
-    setlocale(LC_ALL, "");
     nodelay(stdscr, 0);
     Window win = Window();
-    win.release_the_hounds();
+    win.start();
     return 0;
 }

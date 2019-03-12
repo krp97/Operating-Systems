@@ -14,14 +14,14 @@ find_package(Curses REQUIRED)
 find_package(Threads REQUIRED)
 include_directories(${CURSES_INCLUDE_DIRS})
 
-find_program(CMAKE_CXX_CPPCHECK NAMES cppcheck)
-if(CMAKE_CXX_CPPCHECK)
-  list(APPEND CMAKE_CXX_CPPCHECK
-              "--enable=warning"
-              "--inconclusive"
-              "--force"
-              "--inline-suppr")
-endif()
+# find_program(CMAKE_CXX_CPPCHECK NAMES cppcheck)
+# if(CMAKE_CXX_CPPCHECK)
+#  list(APPEND CMAKE_CXX_CPPCHECK
+#              "--enable=warning"
+#              "--inconclusive"
+#              "--force"
+#              "--inline-suppr")
+# endif()
 
 set(HEADERS
     ${CMAKE_SOURCE_DIR}/include/ball.hpp

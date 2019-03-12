@@ -39,35 +39,34 @@ Window::Window(Window&& other)
     other.window_ = nullptr;
 }
 
-void Window::release_the_hounds()
+void Window::start()
 {
-    key_watcher_ = std::thread([&](){
-      pressed_exit();
-    });
+    key_watcher_ = std::thread([&]() { pressed_exit(); });
 
     while (!shutdown_flag_.load())
     {
-        balls.push_back(std::unique_ptr<Ball>(new Ball(
-            std::chrono::milliseconds(30), window_)));
-        wait_n_check_shutdwn(std::chrono::milliseconds(5000));
+        balls.push_back(std::unique_ptr<Ball>(
+            new Ball(std::chrono::milliseconds(40), window_)));
+        wait_n_check_shutdwn(std::chrono::milliseconds(3000));
     }
 }
 
 void Window::wait_n_check_shutdwn(std::chrono::milliseconds wait_time)
 {
-    auto start = std::chrono::high_resolution_clock::now();
-    auto end = start;
+    auto start    = std::chrono::high_resolution_clock::now();
+    auto end      = start;
     auto duration = std::chrono::duration<double>(end - start);
-    while(!shutdown_flag_.load() && duration < wait_time)
+    while (!shutdown_flag_.load() && duration < wait_time)
     {
-        end = std::chrono::high_resolution_clock::now();
+        end      = std::chrono::high_resolution_clock::now();
         duration = std::chrono::duration<double>(end - start);
     }
 }
 
 void Window::pressed_exit()
 {
-    while(getch() != 27);   // 27 - key code for "esc"
+    while (getch() != 27)
+        ;  // 27 - key code for "esc"
     shutdown_flag_.store(true);
 }
 

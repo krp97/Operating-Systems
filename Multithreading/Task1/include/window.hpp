@@ -1,10 +1,10 @@
 #pragma once
 
 #include <ncurses.h>
+#include <atomic>
 #include <chrono>
 #include <iostream>
 #include <memory>
-#include <atomic>
 #include <thread>
 #include <vector>
 #include "ball.hpp"
@@ -21,7 +21,7 @@ class Window
     Window(Window&&);
     ~Window();
 
-    void release_the_hounds();
+    void start();
 
    private:
     WINDOW* window_;

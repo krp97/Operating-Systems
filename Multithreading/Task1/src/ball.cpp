@@ -6,7 +6,7 @@ std::mutex Ball::mtx_ = std::mutex();
 Ball::Ball(std::chrono::milliseconds speed, WINDOW* window)
     : speed_ {speed},
       window_ {window},
-      direction_{Direction::random_direction()},
+      direction_ {Direction::random_direction()},
       stop_request_ {false}
 {
     thread_ = std::thread([&]() { idle_func(); });
@@ -50,7 +50,7 @@ void Ball::move_on_screen(std::pair<unsigned, unsigned>& prev_coords)
 {
     Ball::mtx_.lock();
     mvwprintw(window_, prev_coords.second, prev_coords.first, " ");
-    mvwprintw(window_, coords.second, coords.first, "⚫");
+    mvwprintw(window_, coords.second, coords.first, "o");
     box(window_, 0, 0);
     wrefresh(window_);
     Ball::mtx_.unlock();
