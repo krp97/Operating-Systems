@@ -6,7 +6,7 @@ if(${CMAKE_VERSION} VERSION_LESS 2.8.2)
   cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
 endif()
 
-project(mt1 DESCRIPTION "Multithreading Task 1" LANGUAGES CXX)
+project(mt2 DESCRIPTION "Multithreading Task 2" LANGUAGES CXX)
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 set(CURSES_USE_NCURSES TRUE)
@@ -14,14 +14,14 @@ find_package(Curses REQUIRED)
 find_package(Threads REQUIRED)
 include_directories(${CURSES_INCLUDE_DIRS})
 
-# find_program(CMAKE_CXX_CPPCHECK NAMES cppcheck)
-# if(CMAKE_CXX_CPPCHECK)
-#  list(APPEND CMAKE_CXX_CPPCHECK
-#              "--enable=warning"
-#              "--inconclusive"
-#              "--force"
-#              "--inline-suppr")
-# endif()
+find_program(CMAKE_CXX_CPPCHECK NAMES cppcheck)
+if(CMAKE_CXX_CPPCHECK)
+list(APPEND CMAKE_CXX_CPPCHECK
+            "--enable=warning"
+            "--inconclusive"
+            "--force"
+            "--inline-suppr")
+endif()
 
 set(HEADERS
     ${CMAKE_SOURCE_DIR}/include/ball.hpp
