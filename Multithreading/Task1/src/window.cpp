@@ -45,8 +45,10 @@ void Window::start()
 
     while (!shutdown_flag_.load())
     {
-        balls.push_back(std::unique_ptr<Ball>(
-            new Ball(std::chrono::milliseconds(40), window_)));
+        auto ptr =
+            std::make_unique<Ball>(std::chrono::milliseconds(40), window_);
+        ball_vec.push_back(std::move(ptr));
+        ball_vec.back()->start();
         wait_n_check_shutdwn(std::chrono::milliseconds(3000));
     }
 }
@@ -70,15 +72,9 @@ void Window::pressed_exit()
     shutdown_flag_.store(true);
 }
 
-void Window::stop_all()
-{
-    key_watcher_.join();
-    for (auto& ball : balls)
-        ball->request_stop();
-}
-
 Window::~Window()
 {
-    stop_all();
+    key_watcher_.join();
+    ball_vec.clear();
     endwin();
 }

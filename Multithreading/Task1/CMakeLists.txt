@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 2.8.2)
 
-set(CMAKE_BUILD_TYPE RELEASE)
+set(CMAKE_BUILD_TYPE Release)
 
 if(${CMAKE_VERSION} VERSION_LESS 2.8.2)
   cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
 endif()
 
-project(mt1 DESCRIPTION "Multithreading Task 1" LANGUAGES CXX)
+project(mt1 DESCRIPTION "Multithreading Task 2" LANGUAGES CXX)
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 set(CURSES_USE_NCURSES TRUE)
