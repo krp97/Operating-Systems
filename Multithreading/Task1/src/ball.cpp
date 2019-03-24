@@ -38,10 +38,8 @@ void Ball::update_direction()
 {
     if (coords.first >= window_->_maxx - 1 || coords.first <= 1)
         direction_.reflect(Direction::horizontal);
-    if (coords.second <= 1 || coords.second >= window_->_maxy - 1)
+    if (coords.second >= window_->_maxy - 1 || coords.second <= 1)
         direction_.reflect(Direction::vertical);
-    if (coords.second >= window_->_maxy - 1)
-        ;  // delete dis
 }
 
 void Ball::update_coords()
