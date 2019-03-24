@@ -26,12 +26,14 @@ endif()
 set(HEADERS
     ${CMAKE_SOURCE_DIR}/include/ball.hpp
     ${CMAKE_SOURCE_DIR}/include/window.hpp
+    ${CMAKE_SOURCE_DIR}/include/main_handler.hpp
     ${CMAKE_SOURCE_DIR}/include/direction.hpp
 )
 
 set(SOURCES
     ${CMAKE_SOURCE_DIR}/src/main.cpp
     ${CMAKE_SOURCE_DIR}/src/window.cpp
+    ${CMAKE_SOURCE_DIR}/src/main_handler.cpp
     ${CMAKE_SOURCE_DIR}/src/direction.cpp
     ${CMAKE_SOURCE_DIR}/src/ball.cpp)
 

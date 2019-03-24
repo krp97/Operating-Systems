@@ -7,12 +7,13 @@
 #include <mutex>
 #include <thread>
 #include "direction.hpp"
+#include "window.hpp"
 
 class Ball
 {
    public:
     Ball() = delete;
-    Ball(std::chrono::milliseconds cooldown_ms, WINDOW*);
+    Ball(std::chrono::milliseconds cooldown_ms, Window& win);
     Ball& operator=(const Ball& rhs) = delete;
     Ball(const Ball& ball)           = delete;
     Ball& operator=(Ball&& rhs) = default;
@@ -23,17 +24,15 @@ class Ball
     void idle_func();
 
    private:
-    std::atomic_bool stop_request_;
+    std::atomic<bool> stop_request_;
     std::chrono::milliseconds speed_;
     Direction direction_;
-    WINDOW* window_;
+    Window& win_;
 
     std::thread thread_;
-    static std::mutex mtx_;
     std::pair<unsigned, unsigned> coords;
 
     void move();
     void update_coords();
     void update_direction();
-    void move_on_screen(std::pair<unsigned, unsigned>& prev_coords);
 };
