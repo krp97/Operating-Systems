@@ -35,5 +35,7 @@ void Main_Handler::pressed_exit()
 Main_Handler::~Main_Handler()
 {
     key_watcher_.join();
+    for (auto& b : ball_vec)
+        b->stop();
     ball_vec.clear();
 }
