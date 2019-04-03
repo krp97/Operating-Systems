@@ -1,7 +1,8 @@
 #include "../include/ball.hpp"
 #include <iostream>
 
-std::atomic<bool> Ball::freeze_flag_ = true;
+std::atomic<bool> Ball::is_frozen_   = false;
+std::atomic<bool> Ball::should_wake_ = false;
 std::mutex Ball::mtx_                = std::mutex();
 std::condition_variable Ball::c_v_   = std::condition_variable();
 
@@ -46,27 +47,49 @@ void Ball::update_direction()
         direction_.reflect(Direction::horizontal);
 }
 
+void Ball::freeze()
+{
+    std::unique_lock<std::mutex> lk(mtx_);
+    if (is_frozen_.load())
+    {
+        lk.unlock();
+        switch_freeze();
+    }
+    else
+    {
+        is_frozen_.store(true);
+        lk.unlock();
+        freeze_first();
+    }
+}
+
+void Ball::freeze_first()
+{
+    std::unique_lock<std::mutex> lk(mtx_);
+    c_v_.wait(lk, [&]() { return should_wake_.load() 
+                            || stop_request_.load(); });
+    is_frozen_.store(false);
+    should_wake_.store(false);
+}
+
+void Ball::switch_freeze()
+{
+    should_wake_.store(true);
+    c_v_.notify_one();
+    while (is_frozen_.load())
+        ;
+    std::unique_lock<std::mutex> lk(mtx_);
+    is_frozen_.store(true);
+    c_v_.wait(lk, [&]() { return should_wake_.load() 
+                            || stop_request_.load(); });
+    should_wake_.store(false);
+    is_frozen_.store(false);
+}
+
 void Ball::update_coords()
 {
     coords.first += direction_.get_x();
     coords.second += direction_.get_y();
-}
-
-void Ball::freeze()
-{
-    std::unique_lock<std::mutex> lk(mtx_);
-    if (!freeze_flag_.load())
-    {
-        freeze_flag_.store(true);
-        lk.unlock();
-        c_v_.notify_one();
-    }
-    else
-    {
-        freeze_flag_.store(false);
-        c_v_.wait(lk,
-                  [this]() { return freeze_flag_.load() || stop_request_; });
-    }
 }
 
 void Ball::stop()

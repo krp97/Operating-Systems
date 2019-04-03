@@ -34,7 +34,8 @@ class Ball
     std::thread thread_;
     std::atomic<bool> stop_request_ {false};
 
-    static std::atomic<bool> freeze_flag_;
+    static std::atomic<bool> is_frozen_;
+    static std::atomic<bool> should_wake_;
     static std::mutex mtx_;
     static std::condition_variable c_v_;
 
@@ -43,4 +44,7 @@ class Ball
     void update_direction();
 
     void freeze();
+
+    void freeze_first();
+    void switch_freeze();
 };
