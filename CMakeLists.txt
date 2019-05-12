@@ -51,11 +51,18 @@ target_sources(task2 PUBLIC
     ${CMAKE_SOURCE_DIR}/Task2/src/direction.cpp
     ${CMAKE_SOURCE_DIR}/Task2/src/ball.cpp)
 
+# ------------------------ Task3 ------------------------
+#add_executable(task3)
+
+#target_include_directories(task3 PUBLIC 
+#    ${CMAKE_SOURCE_DIR}/Task3/include)
+
+#target_sources(task3 PUBLIC)
 
 # ----------- Common properties and libraries -----------
 set_target_properties(task1 task2
                       PROPERTIES CXX_STANDARD
-                                 17
+                                 14
                                  CXX_STANDARD_REQUIRED
                                  ON)
 
