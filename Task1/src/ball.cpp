@@ -1,7 +1,7 @@
 #include "../include/ball.hpp"
 #include <iostream>
 
-std::mutex Ball::mtx_ = std::mutex();
+std::mutex Ball::mtx_;
 
 Ball::Ball(std::chrono::milliseconds speed, WINDOW* window)
     : speed_ {speed},

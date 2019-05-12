@@ -9,11 +9,6 @@
 class Main_Handler
 {
    public:
-    Main_Handler()                    = default;
-    Main_Handler(const Main_Handler&) = default;
-    Main_Handler& operator=(const Main_Handler&) = default;
-    Main_Handler& operator=(Main_Handler&&) = default;
-    Main_Handler(Main_Handler&&)            = default;
     ~Main_Handler();
     void start();
 

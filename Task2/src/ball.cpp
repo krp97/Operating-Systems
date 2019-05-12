@@ -1,10 +1,10 @@
 #include "../include/ball.hpp"
 #include <iostream>
 
-std::atomic<bool> Ball::is_frozen_   = false;
-std::atomic<bool> Ball::should_wake_ = false;
-std::mutex Ball::mtx_                = std::mutex();
-std::condition_variable Ball::c_v_   = std::condition_variable();
+std::atomic<bool> Ball::is_frozen_;
+std::atomic<bool> Ball::should_wake_;
+std::mutex Ball::mtx_;
+std::condition_variable Ball::c_v_;
 
 Ball::Ball(std::chrono::milliseconds speed, Window& win)
     : speed_ {speed}, direction_ {Direction::random_direction()}, win_ {win}
