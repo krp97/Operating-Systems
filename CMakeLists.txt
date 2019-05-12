@@ -52,12 +52,13 @@ target_sources(task2 PUBLIC
     ${CMAKE_SOURCE_DIR}/Task2/src/ball.cpp)
 
 # ------------------------ Task3 ------------------------
-#add_executable(task3)
+add_executable(task3)
+target_include_directories(task3 PUBLIC 
+    ${CMAKE_SOURCE_DIR}/Task3/include)
 
-#target_include_directories(task3 PUBLIC 
-#    ${CMAKE_SOURCE_DIR}/Task3/include)
-
-#target_sources(task3 PUBLIC)
+target_sources(task3 PUBLIC
+    ${CMAKE_SOURCE_DIR}/Task3/src/main.cpp
+    ${CMAKE_SOURCE_DIR}/Task3/src/window.cpp)
 
 # ----------- Common properties and libraries -----------
 set_target_properties(task1 task2
@@ -70,3 +71,4 @@ set(LIBS ${CURSES_LIBRARY} Threads::Threads)
 
 target_link_libraries(task1 ${LIBS})
 target_link_libraries(task2 ${LIBS})
+target_link_libraries(task3 ${LIBS})
