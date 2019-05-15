@@ -6,7 +6,9 @@ Window::Window()
         endwin();
     })
 {
+    use_default_colors();
     draw_foreground();
+    curs_set(false);
 }
 
 void Window::draw_foreground()
@@ -61,8 +63,13 @@ void Window::place_runways(int startx1, int startx2)
 
 void Window::place_hangars()
 {
+    init_pair(1, COLOR_RED, -1);
+    wattron(win_.get(), COLOR_PAIR(1));
     ncurses_rectangle(max_y() - 9, 1, max_y() - 1, 15);
     ncurses_rectangle(max_y() - 9, max_x() - 15, max_y() - 1, max_x() - 1);
+    mvwprintw(win_.get(), max_y() - 5, 4, "Hangar 01");
+    mvwprintw(win_.get(), max_y() - 5, max_x() - 12, "Hangar 02");
+    wattroff(win_.get(), COLOR_PAIR(1));
 }
 
 void Window::ncurses_rectangle(int y1, int x1, int y2, int x2)

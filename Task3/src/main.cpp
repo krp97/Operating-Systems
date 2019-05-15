@@ -2,9 +2,11 @@
 #include <locale.h>
 #include <ncurses.h>
 
-int main(){
-	initscr();
-	Window win;
-	getchar();
-	return 0;
+int main()
+{
+    initscr();
+    start_color();
+    Window win;
+    getchar();
+    return 0;
 }
