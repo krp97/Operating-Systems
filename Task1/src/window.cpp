@@ -49,27 +49,18 @@ void Window::start()
             std::make_unique<Ball>(std::chrono::milliseconds(40), window_);
         ball_vec.push_back(std::move(ptr));
         ball_vec.back()->start();
-        wait_n_check_shutdwn(std::chrono::milliseconds(3000));
-    }
-}
-
-void Window::wait_n_check_shutdwn(std::chrono::milliseconds wait_time)
-{
-    auto start    = std::chrono::high_resolution_clock::now();
-    auto end      = start;
-    auto duration = std::chrono::duration<double>(end - start);
-    while (!shutdown_flag_.load() && duration < wait_time)
-    {
-        end      = std::chrono::high_resolution_clock::now();
-        duration = std::chrono::duration<double>(end - start);
+        std::mutex mtx;
+        std::unique_lock<std::mutex> lk(mtx);
+        cv_.wait_for(lk, std::chrono::milliseconds(3000), [&]() { return shutdown_flag_.load(); });
     }
 }
 
 void Window::pressed_exit()
 {
     while (getch() != 27)
-        ;  // 27 - key code for "esc"
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
     shutdown_flag_.store(true);
+    cv_.notify_all();
 }
 
 Window::~Window()

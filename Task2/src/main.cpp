@@ -1,6 +1,6 @@
+#include "../include/main_handler.hpp"
 #include <locale.h>
 #include <ncurses.h>
-#include "../include/main_handler.hpp"
 
 int main(int argc, char** argv)
 {
