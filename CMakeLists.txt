@@ -37,7 +37,6 @@ target_sources(task1 PUBLIC
     ${CMAKE_SOURCE_DIR}/Task1/src/direction.cpp
     ${CMAKE_SOURCE_DIR}/Task1/src/ball.cpp)
 
-
 # ------------------------ Task2 ------------------------
 add_executable(task2)
 
@@ -69,7 +68,6 @@ set_target_properties(task1 task2
                                  ON)
 
 set(LIBS ${CURSES_LIBRARY} Threads::Threads)
-
 target_link_libraries(task1 ${LIBS})
 target_link_libraries(task2 ${LIBS})
 target_link_libraries(task3 ${LIBS})
