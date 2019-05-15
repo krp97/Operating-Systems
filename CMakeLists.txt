@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.12)
 
-set(CMAKE_BUILD_TYPE RELEASE)
-set(STAT_CCHECK false CACHE BOOL "cpp_check switch")
+set(CMAKE_BUILD_TYPE Debug)
 
 if(${CMAKE_VERSION} VERSION_LESS 3.12)
   cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
@@ -16,16 +15,13 @@ find_package(Threads REQUIRED)
 
 include_directories(${CURSES_INCLUDE_DIRS})
 
-if(STAT_CCHECK)
-    message("---> CPP_CHECK: on")
-    find_program(CMAKE_CXX_CPPCHECK NAMES cppcheck)
-    if(CMAKE_CXX_CPPCHECK)
-        list(APPEND CMAKE_CXX_CPPCHECK
-                "--enable=warning"
-                "--inconclusive"
-                "--force"
-                "--inline-suppr")
-        endif()
+find_program(CMAKE_CXX_CPPCHECK NAMES cppcheck)
+if(CMAKE_CXX_CPPCHECK)
+    list(APPEND CMAKE_CXX_CPPCHECK
+            "--enable=warning"
+            "--inconclusive"
+            "--force"
+            "--inline-suppr")
 endif()
 
 # ------------------------ Task1 ------------------------
@@ -56,6 +52,15 @@ target_sources(task2 PUBLIC
     ${CMAKE_SOURCE_DIR}/Task2/src/direction.cpp
     ${CMAKE_SOURCE_DIR}/Task2/src/ball.cpp)
 
+# ------------------------ Task3 ------------------------
+add_executable(task3)
+target_include_directories(task3 PUBLIC 
+    ${CMAKE_SOURCE_DIR}/Task3/include)
+
+target_sources(task3 PUBLIC
+    ${CMAKE_SOURCE_DIR}/Task3/src/main.cpp
+    ${CMAKE_SOURCE_DIR}/Task3/src/window.cpp)
+
 # ----------- Common properties and libraries -----------
 set_target_properties(task1 task2
                       PROPERTIES CXX_STANDARD
@@ -67,3 +72,4 @@ set(LIBS ${CURSES_LIBRARY} Threads::Threads)
 
 target_link_libraries(task1 ${LIBS})
 target_link_libraries(task2 ${LIBS})
+target_link_libraries(task3 ${LIBS})
