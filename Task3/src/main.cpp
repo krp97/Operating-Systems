@@ -1,12 +1,14 @@
-#include "../include/window.hpp"
 #include <locale.h>
 #include <ncurses.h>
+#include <chrono>
+#include <iostream>
+#include <string>
+#include "../include/window.hpp"
 
 int main()
 {
     initscr();
     start_color();
     Window win;
-    getchar();
     return 0;
 }

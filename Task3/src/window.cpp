@@ -1,18 +1,35 @@
 #include "../include/window.hpp"
 
+// Runway start point is a horizontal half point, shited to the left or right
+// by: sum(half the runway width, half the middle connector width).
+
 Window::Window()
-    : win_(newwin(getmaxy(stdscr), getmaxx(stdscr), 0, 0), [](WINDOW* w) {
-        delwin(w);
-        endwin();
-    })
+    : win_(newwin(getmaxy(stdscr), getmaxx(stdscr), 0, 0),
+           [](WINDOW* w) {
+               delwin(w);
+               endwin();
+           }),
+      first_runw_start_ {getmaxx(stdscr) / 2 - (3 + runway_width / 2),
+                         getmaxy(stdscr) - 10},
+      second_runw_start_ {getmaxx(stdscr) / 2 + (3 + runway_width / 2),
+                          getmaxy(stdscr) - 10},
+      first_hangar_out_ {0, getmaxy(stdscr) - (bottom_line_padding + 2)},
+      second_hangar_out_ {0, getmaxy(stdscr) - (bottom_line_padding + 2)}
 {
     use_default_colors();
     draw_foreground();
     curs_set(false);
 }
 
+void Window::init_pairs()
+{
+    init_pair(WHITE, COLOR_WHITE, -1);
+    init_pair(RED, COLOR_RED, -1);
+}
+
 void Window::draw_foreground()
 {
+    init_pairs();
     std::lock_guard<std::mutex> l_g(mtx_);
     box(win_.get(), 0, 0);
     place_connections();
@@ -22,54 +39,62 @@ void Window::draw_foreground()
 
 void Window::place_connections()
 {
-    const int x_start = 17;
-    const int x_end = max_x() - 17;
-    const int line_len = x_end - 16;
-    mvwhline(win_.get(), max_y() - 3, x_start, ACS_HLINE, line_len);
+    wattron(win_.get(), COLOR_PAIR(WHITE));
+    constexpr int x_start = 17;
+    const int x_end       = max_x() - 17;
+    const int line_len    = x_end - 16;
+    mvwhline(win_.get(), max_y() - bottom_line_padding, x_start, ACS_HLINE,
+             line_len);
 
     // Middle
-    const int half_len = max_x() / 2;
-    const int mid_start = half_len - 3;
-    const int mid_len = 6;
-    mvwhline(win_.get(), max_y() - 7, mid_start, ACS_HLINE, mid_len);
+    const int half_len    = max_x() / 2;
+    const int mid_start   = half_len - 3;
+    constexpr int mid_len = 6;
+    mvwhline(win_.get(), max_y() - top_line_padding, mid_start, ACS_HLINE,
+             mid_len);
 
     // Left
     const int left_len = mid_start - runway_width - x_start;
-    mvwhline(win_.get(), max_y() - 7, x_start, ACS_HLINE, left_len);
+    mvwhline(win_.get(), max_y() - top_line_padding, x_start, ACS_HLINE,
+             left_len);
 
     // Right
     const int right_start = mid_start + mid_len + runway_width;
-    const int right_len = x_end - (mid_start + mid_len + runway_width - 1);
-    mvwhline(win_.get(), max_y() - 7, right_start, ACS_HLINE, right_len);
+    const int right_len   = x_end - (mid_start + mid_len + runway_width - 1);
+    mvwhline(win_.get(), max_y() - top_line_padding, right_start, ACS_HLINE,
+             right_len);
+    wattroff(win_.get(), COLOR_PAIR(WHITE));
     place_runways(x_start + left_len, mid_start + mid_len);
 }
 
 void Window::place_runways(int startx1, int startx2)
 {
-    const int runway_start = 10;
-    const int runway_end = max_y() - 7;
-    const int runway_len = runway_end - runway_start;
-
+    constexpr int runway_start = 10;
+    const int runway_end       = max_y() - top_line_padding;
+    const int runway_len       = runway_end - runway_start;
+    wattron(win_.get(), COLOR_PAIR(WHITE));
     mvwvline(win_.get(), runway_start, startx1, ACS_VLINE, runway_len);
-    mvwvline(win_.get(), runway_start, startx1 + runway_width - 1, ACS_VLINE, runway_len);
+    mvwvline(win_.get(), runway_start, startx1 + runway_width - 1, ACS_VLINE,
+             runway_len);
     mvwaddch(win_.get(), runway_end, startx1, ACS_LRCORNER);
     mvwaddch(win_.get(), runway_end, startx1 + runway_width - 1, ACS_LLCORNER);
 
     mvwvline(win_.get(), runway_start, startx2, ACS_VLINE, runway_len);
-    mvwvline(win_.get(), runway_start, startx2 + runway_width - 1, ACS_VLINE, runway_len);
+    mvwvline(win_.get(), runway_start, startx2 + runway_width - 1, ACS_VLINE,
+             runway_len);
     mvwaddch(win_.get(), runway_end, startx2, ACS_LRCORNER);
     mvwaddch(win_.get(), runway_end, startx2 + runway_width - 1, ACS_LLCORNER);
+    wattroff(win_.get(), COLOR_PAIR(WHITE));
 }
 
 void Window::place_hangars()
 {
-    init_pair(1, COLOR_RED, -1);
-    wattron(win_.get(), COLOR_PAIR(1));
+    wattron(win_.get(), COLOR_PAIR(RED));
     ncurses_rectangle(max_y() - 9, 1, max_y() - 1, 15);
     ncurses_rectangle(max_y() - 9, max_x() - 15, max_y() - 1, max_x() - 1);
     mvwprintw(win_.get(), max_y() - 5, 4, "Hangar 01");
     mvwprintw(win_.get(), max_y() - 5, max_x() - 12, "Hangar 02");
-    wattroff(win_.get(), COLOR_PAIR(1));
+    wattroff(win_.get(), COLOR_PAIR(RED));
 }
 
 void Window::ncurses_rectangle(int y1, int x1, int y2, int x2)
