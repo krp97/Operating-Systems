@@ -6,6 +6,11 @@
 class Window
 {
    public:
+    const std::pair<int, int> first_runw_start_;
+    const std::pair<int, int> second_runw_start_;
+    const std::pair<int, int> first_hangar_out_;
+    const std::pair<int, int> second_hangar_out_;
+
     Window();
     Window(const Window&) = delete;
     Window& operator=(const Window&) = delete;
@@ -13,29 +18,22 @@ class Window
     Window& operator=(Window&&) = default;
     ~Window();
 
-    int max_x() const { return win_->_maxx; };
-    int max_y() const { return win_->_maxy; };
+    size_t max_x() const { return win_->_maxx; };
+    size_t max_y() const { return win_->_maxy; };
 
-    int first_runway_start();
-    int second_runway_start();
     void draw_foreground();
 
    private:
-    std::unique_ptr<WINDOW, void (*)(WINDOW*)> win_;
-    std::mutex mtx_;
-
     // ncurses color_pair constants
     const short WHITE = 1;
     const short RED   = 2;
 
-    // drawing
-    const int runway_width        = 9;
-    const int bottom_line_padding = 3;
-    const int top_line_padding    = 7;
-    const std::pair<int, int> first_runw_start_;
-    const std::pair<int, int> second_runw_start_;
-    const std::pair<int, int> first_hangar_out_;
-    const std::pair<int, int> second_hangar_out_;
+    static const int runway_width {7};
+    static const int bottom_line_padding {2};
+    static const int top_line_padding {8};
+
+    std::unique_ptr<WINDOW, void (*)(WINDOW*)> win_;
+    std::mutex mtx_;
 
     void ncurses_rectangle(int y1, int x1, int y2, int x2);
     void init_pairs();

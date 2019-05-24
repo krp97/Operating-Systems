@@ -1,0 +1,2 @@
+- wrapper for all important location constants: runways start, passenger area, hangar 
+- basic airplane movement
