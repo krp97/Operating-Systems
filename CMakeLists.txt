@@ -12,18 +12,9 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 set(CURSES_USE_NCURSES TRUE)
 find_package(Curses REQUIRED)
 find_package(Threads REQUIRED)
-
 include_directories(${CURSES_INCLUDE_DIRS})
 
-find_program(CMAKE_CXX_CPPCHECK NAMES cppcheck)
-if(CMAKE_CXX_CPPCHECK)
-    list(APPEND CMAKE_CXX_CPPCHECK
-            "--enable=warning"
-            "--inconclusive"
-            "--force"
-            "--inline-suppr")
-endif()
-
+add_compile_options(-O3 -Wall -Wextra -Wpedantic)
 # ------------------------ Task1 ------------------------
 add_executable(task1)
 
@@ -58,14 +49,15 @@ target_include_directories(task3 PUBLIC
 
 target_sources(task3 PUBLIC
     ${CMAKE_SOURCE_DIR}/Task3/src/main.cpp
-    ${CMAKE_SOURCE_DIR}/Task3/src/window.cpp)
+    ${CMAKE_SOURCE_DIR}/Task3/src/window.cpp
+    ${CMAKE_SOURCE_DIR}/Task3/src/airplane.cpp)
 
 # ----------- Common properties and libraries -----------
-set_target_properties(task1 task2
-                      PROPERTIES CXX_STANDARD
-                                 14
-                                 CXX_STANDARD_REQUIRED
-                                 ON)
+set_target_properties(task1 task2 task3
+                        PROPERTIES CXX_STANDARD
+                                14
+                                CXX_STANDARD_REQUIRED
+                                ON)
 
 set(LIBS ${CURSES_LIBRARY} Threads::Threads)
 target_link_libraries(task1 ${LIBS})
