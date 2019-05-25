@@ -49,13 +49,11 @@ void Window::place_connections()
     const int half_len    = x_end - RUNWAY_WIDTH - 2;
     const int mid_start   = half_len - 3;
     constexpr int mid_len = 6;
-    mvwhline(win_.get(), max_y() - TOP_PADDING, mid_start, ACS_HLINE,
-             mid_len);
+    mvwhline(win_.get(), max_y() - TOP_PADDING, mid_start, ACS_HLINE, mid_len);
 
     // Left
     const int left_len = mid_start - RUNWAY_WIDTH - x_start;
-    mvwhline(win_.get(), max_y() - TOP_PADDING, x_start, ACS_HLINE,
-             left_len);
+    mvwhline(win_.get(), max_y() - TOP_PADDING, x_start, ACS_HLINE, left_len);
     wattroff(win_.get(), COLOR_PAIR(WHITE));
     place_runways(x_start + left_len, mid_start + mid_len);
 }
@@ -79,8 +77,7 @@ void Window::place_runways(int startx1, int startx2)
     mvwvline(win_.get(), runway_start, startx2 + RUNWAY_WIDTH - 1, ACS_VLINE,
              runway_len + 6);
     mvwaddch(win_.get(), runway_end, startx2, ACS_LRCORNER);
-    mvwaddch(win_.get(), max_y() - BOTTOM_PADDING, max_x() - 2,
-             ACS_LRCORNER);
+    mvwaddch(win_.get(), max_y() - BOTTOM_PADDING, max_x() - 2, ACS_LRCORNER);
     wattroff(win_.get(), COLOR_PAIR(WHITE));
 }
 

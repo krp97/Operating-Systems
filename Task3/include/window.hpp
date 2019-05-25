@@ -34,7 +34,7 @@ class Window
     static const int RUNWAY_WIDTH {7};
     static const int BOTTOM_PADDING {2};
     static const int TOP_PADDING {8};
-    
+
     std::unique_ptr<WINDOW, void (*)(WINDOW*)> win_;
     std::mutex mtx_;
 
