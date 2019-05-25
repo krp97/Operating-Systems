@@ -5,7 +5,7 @@ Outgoing_Airplane::Outgoing_Airplane(std::chrono::milliseconds speed,
                                      std::pair<size_t, size_t> pos)
     : Airplane(speed, win, pos)
 {
-    airplane_th_ = std::thread(start_action);
+    airplane_th_ = std::thread(&Outgoing_Airplane::start_action, this);
 }
 
 void Outgoing_Airplane::start_action() {}
