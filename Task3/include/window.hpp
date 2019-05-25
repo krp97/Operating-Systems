@@ -6,10 +6,12 @@
 class Window
 {
    public:
-    const std::pair<int, int> first_runw_start_;
-    const std::pair<int, int> second_runw_start_;
-    const std::pair<int, int> first_hangar_out_;
-    const std::pair<int, int> second_hangar_out_;
+    // Terminal specific constants
+    const std::pair<size_t, size_t> LEFT_RUNWAY_START;
+    const std::pair<size_t, size_t> RIGHT_RUNWAY_START;
+    const std::pair<size_t, size_t> HANGAR_OUT;
+    const std::pair<size_t, size_t> UPPER_PASSENGER_AREA;
+    const std::pair<size_t, size_t> LOWER_PASSENGER_AREA;
 
     Window();
     Window(const Window&) = delete;
@@ -28,17 +30,19 @@ class Window
     const short WHITE = 1;
     const short RED   = 2;
 
-    static const int runway_width {7};
-    static const int bottom_line_padding {2};
-    static const int top_line_padding {8};
-
+    // fixed constants for drawing
+    static const int RUNWAY_WIDTH {7};
+    static const int BOTTOM_PADDING {2};
+    static const int TOP_PADDING {8};
+    
     std::unique_ptr<WINDOW, void (*)(WINDOW*)> win_;
     std::mutex mtx_;
 
     void ncurses_rectangle(int y1, int x1, int y2, int x2);
     void init_pairs();
 
+    // Draws the strip between the hangar and runways.
     void place_connections();
     void place_runways(int start1x, int start2x);
-    void place_hangars();
+    void place_hangar();
 };
