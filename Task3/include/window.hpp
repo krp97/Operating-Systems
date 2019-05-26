@@ -1,4 +1,5 @@
 #pragma once
+
 #include <ncurses.h>
 #include <memory>
 #include <mutex>
@@ -10,8 +11,9 @@ class Window
     const std::pair<size_t, size_t> LEFT_RUNWAY_START;
     const std::pair<size_t, size_t> RIGHT_RUNWAY_START;
     const std::pair<size_t, size_t> HANGAR_OUT;
-    const std::pair<size_t, size_t> UPPER_PASSENGER_AREA;
-    const std::pair<size_t, size_t> LOWER_PASSENGER_AREA;
+    size_t PASSENGER_STOP;
+    size_t UPPER_LANE_Y;
+    size_t LOWER_LANE_Y;
 
     Window();
     Window(const Window&) = delete;
@@ -25,12 +27,17 @@ class Window
 
     void draw_foreground();
 
+    void move_on_screen(const std::pair<unsigned, unsigned>& prev_coords,
+                        const std::pair<unsigned, unsigned>& next_coords);
+
    private:
     // ncurses color_pair constants
     const short WHITE = 1;
     const short RED   = 2;
 
     // fixed constants for drawing
+    static const int RIGHT_PADDING {2};
+    static const int RUNWAY_CONNECTION_WIDTH {6};
     static const int RUNWAY_WIDTH {7};
     static const int BOTTOM_PADDING {2};
     static const int TOP_PADDING {8};

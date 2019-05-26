@@ -14,7 +14,7 @@ find_package(Curses REQUIRED)
 find_package(Threads REQUIRED)
 include_directories(${CURSES_INCLUDE_DIRS})
 
-add_compile_options(-O3 -Wall -Wextra -Wpedantic)
+#add_compile_options(-O3 -Wall -Wextra -Wpedantic)
 # ------------------------ Task1 ------------------------
 add_executable(task1)
 

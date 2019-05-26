@@ -4,11 +4,18 @@
 // by: sum(half the runway width, half the middle connector width).
 
 Window::Window()
-    : LEFT_RUNWAY_START {getmaxx(stdscr) / 2 - (3 + RUNWAY_WIDTH / 2),
-                         getmaxy(stdscr) - 10},
-      RIGHT_RUNWAY_START {getmaxx(stdscr) / 2 + (3 + RUNWAY_WIDTH / 2),
-                          getmaxy(stdscr) - 10},
-      HANGAR_OUT {0, getmaxy(stdscr) - (BOTTOM_PADDING + 2)},
+    : LEFT_RUNWAY_START {getmaxx(stdscr) -
+                             (2 * RUNWAY_WIDTH + RUNWAY_CONNECTION_WIDTH +
+                              RIGHT_PADDING) +
+                             RUNWAY_WIDTH / 2,
+                         getmaxy(stdscr) - BOTTOM_PADDING - 7},
+      RIGHT_RUNWAY_START {
+          LEFT_RUNWAY_START.first + RUNWAY_WIDTH + RUNWAY_CONNECTION_WIDTH,
+          getmaxy(stdscr) - BOTTOM_PADDING - 7},
+      HANGAR_OUT {16, getmaxy(stdscr) - (BOTTOM_PADDING + 2)},
+      PASSENGER_STOP {getmaxx(stdscr) / 2},
+      UPPER_LANE_Y {getmaxy(stdscr) - (BOTTOM_PADDING + 4)},
+      LOWER_LANE_Y {getmaxy(stdscr) - (BOTTOM_PADDING + 2)},
       win_(newwin(getmaxy(stdscr), getmaxx(stdscr), 0, 0), [](WINDOW* w) {
           delwin(w);
           endwin();
@@ -99,6 +106,15 @@ void Window::ncurses_rectangle(int y1, int x1, int y2, int x2)
     mvwaddch(win_.get(), y2, x1, ACS_LLCORNER);
     mvwaddch(win_.get(), y1, x2, ACS_URCORNER);
     mvwaddch(win_.get(), y2, x2, ACS_LRCORNER);
+}
+
+void Window::move_on_screen(const std::pair<unsigned, unsigned>& prev_coords,
+                            const std::pair<unsigned, unsigned>& next_coords)
+{
+    std::lock_guard<std::mutex> l_g(mtx_);
+    mvwprintw(win_.get(), prev_coords.second, prev_coords.first, " ");
+    mvwprintw(win_.get(), next_coords.second, next_coords.first, "o");
+    wrefresh(win_.get());
 }
 
 Window::~Window() {}
