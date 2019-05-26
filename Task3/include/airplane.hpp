@@ -1,7 +1,9 @@
 #pragma once
 
 #include <chrono>
+#include <functional>
 #include <thread>
+#include "../src/utils.cpp"
 #include "window.hpp"
 
 class Airplane
@@ -29,8 +31,31 @@ class Airplane
     Window& win_;
     std::pair<size_t, size_t> position_;
 
-    virtual void move_horizontally(std::pair<size_t, size_t>& prev,
-                                          const std::pair<size_t, size_t> next) = 0;
-    virtual void move_vertically(std::pair<size_t, size_t>& prev,
-                                 const std::pair<size_t, size_t> next) = 0;
+    void move_horizontally(std::pair<size_t, size_t>& prev,
+                           const std::pair<size_t, size_t> next)
+    {
+        int x_diff      = prev.first - next.first;
+        auto func       = utils::get_operator_for_sign(x_diff);
+        auto iterations = abs(x_diff);
+        for (int moves = 1; moves <= iterations; ++moves)
+        {
+            win_.move_on_screen(prev, {func(prev.first), prev.second});
+            prev.first = func(prev.first);
+            std::this_thread::sleep_for(std::chrono::milliseconds(speed_));
+        }
+    }
+
+    void move_vertically(std::pair<size_t, size_t>& prev,
+                         const std::pair<size_t, size_t> next)
+    {
+        int y_diff      = prev.second - next.second;
+        auto func       = utils::get_operator_for_sign(y_diff);
+        auto iterations = abs(y_diff);
+        for (int moves = 1; moves <= iterations; ++moves)
+        {
+            win_.move_on_screen(prev, {prev.first, func(prev.second)});
+            prev.second = func(prev.second);
+            std::this_thread::sleep_for(std::chrono::milliseconds(speed_));
+        }
+    }
 };

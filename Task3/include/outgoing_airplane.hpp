@@ -22,10 +22,7 @@ class Outgoing_Airplane : public Airplane
    private:
     std::thread airplane_th_;
 
-    void move_horizontally(std::pair<size_t, size_t>& prev,
-                           const std::pair<size_t, size_t> next) override;
-    void move_vertically(std::pair<size_t, size_t>& prev,
-                         const std::pair<size_t, size_t> next) override;
     void move_to_passenger_area();
+    void move_to_runway();
     void take_off();
 };

@@ -50,7 +50,8 @@ target_include_directories(task3 PUBLIC
 target_sources(task3 PUBLIC
     ${CMAKE_SOURCE_DIR}/Task3/src/main.cpp
     ${CMAKE_SOURCE_DIR}/Task3/src/window.cpp
-    ${CMAKE_SOURCE_DIR}/Task3/src/outgoing_airplane.cpp)
+    ${CMAKE_SOURCE_DIR}/Task3/src/outgoing_airplane.cpp
+    ${CMAKE_SOURCE_DIR}/Task3/src/incoming_airplane.cpp)
 
 # ----------- Common properties and libraries -----------
 set_target_properties(task1 task2 task3
