@@ -35,6 +35,7 @@ void Window::init_pairs()
 {
     init_pair(WHITE, COLOR_WHITE, -1);
     init_pair(RED, COLOR_RED, -1);
+    init_pair(BLUE, COLOR_BLUE, -1);
 }
 
 void Window::draw_foreground()
@@ -44,7 +45,8 @@ void Window::draw_foreground()
     box(win_.get(), 0, 0);
     place_connections();
     place_hangar();
-    place_passenger_areas();
+    place_upper_pa();
+    place_lower_pa();
     wrefresh(win_.get());
 }
 
@@ -103,20 +105,26 @@ void Window::place_hangar()
     wattroff(win_.get(), COLOR_PAIR(RED));
 }
 
-void Window::place_passenger_areas()
+void Window::place_upper_pa()
 {
     size_t area_width   = 6;
     size_t area_height  = 2;
     size_t x_start      = (max_x() / 2) - (area_width / 2);
     size_t upper_area_y = max_y() - BOTTOM_PADDING - 4 - area_height - 1;
-    size_t lower_area_y = max_y() - BOTTOM_PADDING + 1;
-
     ncurses_rectangle(upper_area_y, x_start, upper_area_y + area_height,
                       x_start + area_width);
+    mvwprintw(win_.get(), upper_area_y + 1, x_start + 2, "PA1");
+}
+
+void Window::place_lower_pa()
+{
+    size_t area_width   = 6;
+    size_t area_height  = 2;
+    size_t x_start      = (max_x() / 2) - (area_width / 2);
+    size_t lower_area_y = max_y() - BOTTOM_PADDING + 1;
     ncurses_rectangle(lower_area_y, x_start, lower_area_y + area_height,
                       x_start + area_width);
 
-    mvwprintw(win_.get(), upper_area_y + 1, x_start + 2, "PA1");
     mvwprintw(win_.get(), lower_area_y + 1, x_start + 2, "PA2");
 }
 
@@ -145,6 +153,24 @@ void Window::clear_pos(const std::pair<unsigned, unsigned>& coords)
 {
     std::lock_guard<std::mutex> l_g(mtx_);
     mvwprintw(win_.get(), coords.second, coords.first, " ");
+    wrefresh(win_.get());
+}
+
+void Window::light_up_upper_pa(const short color)
+{
+    std::lock_guard<std::mutex> l_g(mtx_);
+    wattron(win_.get(), COLOR_PAIR(color));
+    place_upper_pa();
+    wattroff(win_.get(), COLOR_PAIR(color));
+    wrefresh(win_.get());
+}
+
+void Window::light_up_lower_pa(const short color)
+{
+    std::lock_guard<std::mutex> l_g(mtx_);
+    wattron(win_.get(), COLOR_PAIR(color));
+    place_lower_pa();
+    wattroff(win_.get(), COLOR_PAIR(color));
     wrefresh(win_.get());
 }
 

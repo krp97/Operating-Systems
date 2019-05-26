@@ -18,6 +18,11 @@ class Window
     size_t UPPER_LANE_Y;
     size_t LOWER_LANE_Y;
 
+    // ncurses color_pair constants
+    const short WHITE = 1;
+    const short RED   = 2;
+    const short BLUE  = 3;
+
     Window();
     Window(const Window&) = delete;
     Window& operator=(const Window&) = delete;
@@ -33,11 +38,10 @@ class Window
                         const std::pair<unsigned, unsigned>& next_coords);
     void clear_pos(const std::pair<unsigned, unsigned>& coords);
 
-   private:
-    // ncurses color_pair constants
-    const short WHITE = 1;
-    const short RED   = 2;
+    void light_up_upper_pa(const short color);
+    void light_up_lower_pa(const short color);
 
+   private:
     // fixed constants for drawing
     static const int RIGHT_PADDING {2};
     static const int RUNWAY_CONNECTION_WIDTH {6};
@@ -55,5 +59,7 @@ class Window
     void place_connections();
     void place_runways(int start1x, int start2x);
     void place_hangar();
+    void place_upper_pa();
+    void place_lower_pa();
     void place_passenger_areas();
 };

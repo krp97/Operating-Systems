@@ -19,10 +19,12 @@ void Outgoing_Airplane::start_action()
 void Outgoing_Airplane::move_to_passenger_area()
 {
     move_horizontally(position_, {win_.PASSENGER_STOP, win_.LOWER_LANE_Y});
+    win_.light_up_lower_pa(win_.BLUE);
 }
 
 void Outgoing_Airplane::move_to_runway()
 {
+    win_.light_up_lower_pa(win_.WHITE);
     move_horizontally(position_, win_.RIGHT_RUNWAY_START);
     move_vertically(position_, win_.RIGHT_RUNWAY_START);
 }
