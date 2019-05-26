@@ -4,16 +4,12 @@ Outgoing_Airplane::Outgoing_Airplane(std::chrono::milliseconds speed,
                                      Window& win, std::pair<size_t, size_t> pos)
     : Airplane(speed, win, pos)
 {
-    airplane_th_ = std::thread(&Outgoing_Airplane::start_action, this);
+    start_action();
 }
 
 void Outgoing_Airplane::start_action()
 {
-    move_to_passenger_area();
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
-    move_to_runway();
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
-    take_off();
+    airplane_th_ = std::thread(&Outgoing_Airplane::take_off, this);
 }
 
 void Outgoing_Airplane::move_to_passenger_area()
@@ -31,6 +27,10 @@ void Outgoing_Airplane::move_to_runway()
 
 void Outgoing_Airplane::take_off()
 {
+    move_to_passenger_area();
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    move_to_runway();
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
     move_vertically(position_, win_.RIGHT_RUNWAY_END);
     win_.clear_pos(position_);
 }
