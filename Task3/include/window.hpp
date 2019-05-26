@@ -22,6 +22,14 @@ class Window
     const short WHITE = 1;
     const short RED   = 2;
     const short BLUE  = 3;
+    const short GREEN = 4;
+    const short PINK  = 5;
+
+    // stats coordinates
+    const short LEFT_RUNWAY_STAT  = 5;
+    const short RIGHT_RUNWAY_STAT = 6;
+    const short PA1_STAT          = 7;
+    const short PA2_STAT          = 8;
 
     Window();
     Window(const Window&) = delete;
@@ -33,13 +41,13 @@ class Window
     size_t max_x() const { return win_->_maxx; };
     size_t max_y() const { return win_->_maxy; };
 
-    void draw_foreground();
     void move_on_screen(const std::pair<unsigned, unsigned>& prev_coords,
                         const std::pair<unsigned, unsigned>& next_coords);
     void clear_pos(const std::pair<unsigned, unsigned>& coords);
 
     void light_up_upper_pa(const short color);
     void light_up_lower_pa(const short color);
+    void change_status(const short stat, std::string status, const short color);
 
    private:
     // fixed constants for drawing
@@ -47,19 +55,22 @@ class Window
     static const int RUNWAY_CONNECTION_WIDTH {6};
     static const int RUNWAY_WIDTH {7};
     static const int BOTTOM_PADDING {5};
-    static const int TOP_PADDING {8};
+    static const int TOP_PADDING {15};
 
     std::unique_ptr<WINDOW, void (*)(WINDOW*)> win_;
-    std::mutex mtx_;
+    static std::mutex mtx_;
 
     void ncurses_rectangle(int y1, int x1, int y2, int x2);
     void init_pairs();
 
-    // Draws the strip between the hangar and runways.
+    void draw_title();
+    void draw_stats();
+    void draw_keyfuncs();
+    void draw_foreground();
     void place_connections();
     void place_runways(int start1x, int start2x);
     void place_hangar();
     void place_upper_pa();
     void place_lower_pa();
-    void place_passenger_areas();
+    void draw_plane_count(int incoming, int outgoing);
 };

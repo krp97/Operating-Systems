@@ -2,6 +2,7 @@
 
 // Runway start point is a horizontal half point, shited to the left or right
 // by: sum(half the runway width, half the middle connector width).
+std::mutex Window::mtx_;
 
 Window::Window()
     : LEFT_RUNWAY_START {getmaxx(stdscr) -
@@ -33,25 +34,81 @@ Window::Window()
 
 void Window::init_pairs()
 {
+    init_color(COLOR_GREEN, 0, 700, 0);
+    init_color(COLOR_RED, 700, 0, 0);
+
     init_pair(WHITE, COLOR_WHITE, -1);
     init_pair(RED, COLOR_RED, -1);
     init_pair(BLUE, COLOR_BLUE, -1);
+    init_pair(GREEN, COLOR_GREEN, -1);
+    init_pair(PINK, COLOR_MAGENTA, -1);
 }
 
 void Window::draw_foreground()
 {
     init_pairs();
-    std::lock_guard<std::mutex> l_g(mtx_);
     box(win_.get(), 0, 0);
+    draw_title();
+    draw_keyfuncs();
+    draw_stats();
     place_connections();
     place_hangar();
     place_upper_pa();
     place_lower_pa();
+    draw_plane_count(0, 0);
+    wrefresh(win_.get());
+}
+
+void Window::draw_title()
+{
+    std::lock_guard<std::mutex> l_g(mtx_);
+    wattron(win_.get(), COLOR_PAIR(PINK));
+    ncurses_rectangle(2, 2, TOP_PADDING - 6, max_x() - 2);
+    mvwprintw(win_.get(), 3, (max_x() / 2) - 8, "Airport Simulator");
+    wattroff(win_.get(), COLOR_PAIR(PINK));
+    wrefresh(win_.get());
+}
+
+void Window::draw_stats()
+{
+    std::unique_lock<std::mutex> l_g(mtx_);
+    wattron(win_.get(), COLOR_PAIR(WHITE));
+    mvwprintw(win_.get(), 5, 4, "Left  runway: ");
+    mvwprintw(win_.get(), 6, 4, "Right runway: ");
+    mvwprintw(win_.get(), 7, 13, "PA1: ");
+    mvwprintw(win_.get(), 8, 13, "PA2: ");
+    wattroff(win_.get(), COLOR_PAIR(WHITE));
+    l_g.unlock();
+    change_status(LEFT_RUNWAY_STAT, "Online", GREEN);
+    change_status(RIGHT_RUNWAY_STAT, "Online", GREEN);
+    change_status(PA1_STAT, "Free", GREEN);
+    change_status(PA2_STAT, "Free", GREEN);
+}
+
+void Window::draw_keyfuncs()
+{
+    std::lock_guard<std::mutex> l_g(mtx_);
+    wattron(win_.get(), COLOR_PAIR(WHITE));
+    mvwprintw(win_.get(), 5, max_x() - 21, "Hotkeys:");
+    mvwprintw(win_.get(), 6, max_x() - 21, "b - Break a runway");
+    mvwprintw(win_.get(), 7, max_x() - 21, "Esc - Exit");
+    wattroff(win_.get(), COLOR_PAIR(WHITE));
+    wrefresh(win_.get());
+}
+
+void Window::change_status(const short stat, std::string status,
+                           const short color)
+{
+    std::lock_guard<std::mutex> l_g(mtx_);
+    wattron(win_.get(), COLOR_PAIR(color));
+    mvwprintw(win_.get(), stat, 18, status.c_str());
+    wattroff(win_.get(), COLOR_PAIR(color));
     wrefresh(win_.get());
 }
 
 void Window::place_connections()
 {
+    std::lock_guard<std::mutex> l_g(mtx_);
     wattron(win_.get(), COLOR_PAIR(WHITE));
     constexpr int x_start = 17;
     const int x_end       = max_x() - 2;
@@ -99,9 +156,10 @@ void Window::place_runways(int startx1, int startx2)
 
 void Window::place_hangar()
 {
+    std::lock_guard<std::mutex> l_g(mtx_);
     wattron(win_.get(), COLOR_PAIR(RED));
     ncurses_rectangle(max_y() - 11, 1, max_y() - 3, 15);
-    mvwprintw(win_.get(), max_y() - 7, 5, "Hangar");
+    mvwprintw(win_.get(), max_y() - 9, 5, "Hangar");
     wattroff(win_.get(), COLOR_PAIR(RED));
 }
 
@@ -111,6 +169,7 @@ void Window::place_upper_pa()
     size_t area_height  = 2;
     size_t x_start      = (max_x() / 2) - (area_width / 2);
     size_t upper_area_y = max_y() - BOTTOM_PADDING - 4 - area_height - 1;
+    std::lock_guard<std::mutex> l_g(mtx_);
     ncurses_rectangle(upper_area_y, x_start, upper_area_y + area_height,
                       x_start + area_width);
     mvwprintw(win_.get(), upper_area_y + 1, x_start + 2, "PA1");
@@ -122,6 +181,7 @@ void Window::place_lower_pa()
     size_t area_height  = 2;
     size_t x_start      = (max_x() / 2) - (area_width / 2);
     size_t lower_area_y = max_y() - BOTTOM_PADDING + 1;
+    std::lock_guard<std::mutex> l_g(mtx_);
     ncurses_rectangle(lower_area_y, x_start, lower_area_y + area_height,
                       x_start + area_width);
 
@@ -171,6 +231,19 @@ void Window::light_up_lower_pa(const short color)
     wattron(win_.get(), COLOR_PAIR(color));
     place_lower_pa();
     wattroff(win_.get(), COLOR_PAIR(color));
+    wrefresh(win_.get());
+}
+
+void Window::draw_plane_count(int incoming, int outgoing)
+{
+    std::string incoming_str = "Incoming: " + std::to_string(incoming);
+    std::string outgoing_str = "Outgoing: " + std::to_string(outgoing);
+
+    std::lock_guard<std::mutex> l_g(mtx_);
+    wattron(win_.get(), COLOR_PAIR(RED));
+    mvwprintw(win_.get(), max_y() - 7, 3, incoming_str.c_str());
+    mvwprintw(win_.get(), max_y() - 6, 3, outgoing_str.c_str());
+    wattroff(win_.get(), COLOR_PAIR(RED));
     wrefresh(win_.get());
 }
 
