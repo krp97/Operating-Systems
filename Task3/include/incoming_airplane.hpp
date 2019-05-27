@@ -4,7 +4,7 @@ class Incoming_Airplane : public Airplane
    public:
     Incoming_Airplane() = delete;
     Incoming_Airplane(std::chrono::milliseconds speed, Window& win,
-                      std::pair<size_t, size_t> pos);
+                      Route route);
     Incoming_Airplane(const Incoming_Airplane&) = delete;
     Incoming_Airplane& operator=(const Incoming_Airplane&) = delete;
     Incoming_Airplane(Incoming_Airplane&&)                 = default;

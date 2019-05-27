@@ -15,11 +15,12 @@ class Control_Tower
     ~Control_Tower();
 
     void create_flight(std::unique_ptr<Airplane> flight);
+    void schedule_flight();
 
     bool should_shutdown() const;
 
    private:
-    std::queue<std::unique_ptr<Airplane>> incoming_q;
-    std::queue<std::unique_ptr<Airplane>> outgoing_q;
+    std::vector<std::unique_ptr<Airplane>> flights_;
+
     std::atomic_bool shutdown_flag_;
 };

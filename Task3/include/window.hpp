@@ -43,6 +43,7 @@ class Window
 
     void move_on_screen(const std::pair<unsigned, unsigned>& prev_coords,
                         const std::pair<unsigned, unsigned>& next_coords);
+
     void clear_pos(const std::pair<unsigned, unsigned>& coords);
 
     void light_up_upper_pa(const short color);
@@ -58,7 +59,7 @@ class Window
     static const int TOP_PADDING {15};
 
     std::unique_ptr<WINDOW, void (*)(WINDOW*)> win_;
-    static std::mutex mtx_;
+    std::mutex mtx_;
 
     void ncurses_rectangle(int y1, int x1, int y2, int x2);
     void init_pairs();
@@ -73,4 +74,9 @@ class Window
     void place_upper_pa();
     void place_lower_pa();
     void draw_plane_count(int incoming, int outgoing);
+
+    void move_horizontally(std::pair<size_t, size_t>& prev,
+                           const std::pair<size_t, size_t> next);
+    void move_vertically(std::pair<size_t, size_t>& prev,
+                         const std::pair<size_t, size_t> next);
 };
