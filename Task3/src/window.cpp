@@ -1,4 +1,5 @@
 #include "../include/window.hpp"
+#include "../include/utils.hpp"
 
 Window::Window()
     : LEFT_RUNWAY_START {getmaxx(stdscr) -
@@ -241,34 +242,6 @@ void Window::draw_plane_count(int incoming, int outgoing)
     mvwprintw(win_.get(), max_y() - 6, 3, outgoing_str.c_str());
     wattroff(win_.get(), COLOR_PAIR(RED));
     wrefresh(win_.get());
-}
-
-void move_horizontally(std::pair<size_t, size_t>& prev,
-                       const std::pair<size_t, size_t> next)
-{
-    int x_diff      = prev.first - next.first;
-    auto func       = utils::get_operator_for_sign(x_diff);
-    auto iterations = abs(x_diff);
-    for (int moves = 1; moves <= iterations; ++moves)
-    {
-        win_.move_on_screen(prev, {func(prev.first), prev.second});
-        prev.first = func(prev.first);
-        std::this_thread::sleep_for(std::chrono::milliseconds(speed_));
-    }
-}
-
-void move_vertically(std::pair<size_t, size_t>& prev,
-                     const std::pair<size_t, size_t> next)
-{
-    int y_diff      = prev.second - next.second;
-    auto func       = utils::get_operator_for_sign(y_diff);
-    auto iterations = abs(y_diff);
-    for (int moves = 1; moves <= iterations; ++moves)
-    {
-        win_.move_on_screen(prev, {prev.first, func(prev.second)});
-        prev.second = func(prev.second);
-        std::this_thread::sleep_for(std::chrono::milliseconds(speed_));
-    }
 }
 
 Window::~Window() {}

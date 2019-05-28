@@ -74,9 +74,4 @@ class Window
     void place_upper_pa();
     void place_lower_pa();
     void draw_plane_count(int incoming, int outgoing);
-
-    void move_horizontally(std::pair<size_t, size_t>& prev,
-                           const std::pair<size_t, size_t> next);
-    void move_vertically(std::pair<size_t, size_t>& prev,
-                         const std::pair<size_t, size_t> next);
 };

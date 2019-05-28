@@ -21,6 +21,5 @@ class Control_Tower
 
    private:
     std::vector<std::unique_ptr<Airplane>> flights_;
-
     std::atomic_bool shutdown_flag_;
 };
