@@ -11,7 +11,7 @@ int main()
     initscr();
     start_color();
     Window win;
-    Control_Tower ct;
+    Control_Tower ct(win);
     Flight_Generator fg =
         Flight_Generator(win, ct, 1, std::chrono::milliseconds(10));
     ct.idle_func();

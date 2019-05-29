@@ -10,12 +10,15 @@ Window::Window()
       RIGHT_RUNWAY_START {
           LEFT_RUNWAY_START.first + RUNWAY_WIDTH + RUNWAY_CONNECTION_WIDTH,
           getmaxy(stdscr) - BOTTOM_PADDING - 4},
-      HANGAR_OUT {16, getmaxy(stdscr) - (BOTTOM_PADDING + 2)},
       PASSENGER_STOP {static_cast<size_t>(getmaxx(stdscr) / 2)},
       UPPER_LANE_Y {
           static_cast<size_t>(getmaxy(stdscr) - (BOTTOM_PADDING + 4))},
       LOWER_LANE_Y {
           static_cast<size_t>(getmaxy(stdscr) - (BOTTOM_PADDING + 2))},
+      HANGAR_OUT_LOWER {
+          16, static_cast<size_t>(getmaxy(stdscr) - (BOTTOM_PADDING + 2))},
+      HANGAR_OUT_UPPER {
+          16, static_cast<size_t>(getmaxy(stdscr) - (BOTTOM_PADDING + 4))},
       LEFT_RUNWAY_END {LEFT_RUNWAY_START.first, 8},
       RIGHT_RUNWAY_END {RIGHT_RUNWAY_START.first, 8},
       win_(newwin(getmaxy(stdscr), getmaxx(stdscr), 0, 0), [](WINDOW* w) {

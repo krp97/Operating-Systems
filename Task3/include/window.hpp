@@ -10,7 +10,8 @@ class Window
     // Terminal specific constants
     const std::pair<size_t, size_t> LEFT_RUNWAY_START;
     const std::pair<size_t, size_t> RIGHT_RUNWAY_START;
-    const std::pair<size_t, size_t> HANGAR_OUT;
+    const std::pair<size_t, size_t> HANGAR_OUT_LOWER;
+    const std::pair<size_t, size_t> HANGAR_OUT_UPPER;
     const std::pair<size_t, size_t> LEFT_RUNWAY_END;
     const std::pair<size_t, size_t> RIGHT_RUNWAY_END;
 

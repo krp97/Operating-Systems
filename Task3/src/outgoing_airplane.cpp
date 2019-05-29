@@ -1,8 +1,8 @@
 #include "../include/outgoing_airplane.hpp"
 
 Outgoing_Airplane::Outgoing_Airplane(std::chrono::milliseconds speed,
-                                     Window& win, Route route)
-    : Airplane(speed, win, route, Priority(utils::random_int(1, 5)))
+                                     Window& win)
+    : Airplane(speed, win, Priority(utils::random_int(1, 5)))
 {
     start_action();
 }

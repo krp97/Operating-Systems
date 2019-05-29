@@ -1,8 +1,8 @@
 #include "../include/incoming_airplane.hpp"
 
 Incoming_Airplane::Incoming_Airplane(std::chrono::milliseconds speed,
-                                     Window& win, Route route)
-    : Airplane(speed, win, route, Priority(utils::random_int(3, 8)))
+                                     Window& win)
+    : Airplane(speed, win, Priority(utils::random_int(3, 8)))
 {
     airplane_th_ = std::thread(&Incoming_Airplane::start_action, this);
 }

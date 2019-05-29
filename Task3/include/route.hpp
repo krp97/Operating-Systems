@@ -8,11 +8,11 @@ class Route
     using Point = std::pair<size_t, size_t>;
 
    public:
-    const Point start_;
-    const Point passenger_area_;
-    const Point runway_start_;
-    const Point end_;
-
+    Point start_;
+    Point passenger_area_;
+    Point runway_start_;
+    Point end_;
+    Route() = default;
     Route(Point start, Point passenger_area, Point runway_start, Point end)
         : start_ {start},
           passenger_area_ {passenger_area},
@@ -20,4 +20,7 @@ class Route
           end_ {end}
     {
     }
+
+    Route(const Route&) = default;
+    Route& operator=(const Route&) = default;
 };

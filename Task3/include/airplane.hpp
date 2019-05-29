@@ -19,13 +19,8 @@ class Airplane
     };
 
     Airplane() = delete;
-    Airplane(std::chrono::milliseconds speed, Window& win, Route route,
-             Priority p)
-        : speed_ {speed},
-          win_ {win},
-          route_ {route},
-          priority_ {p},
-          position_ {route.start_}
+    Airplane(std::chrono::milliseconds speed, Window& win, Priority p)
+        : speed_ {speed}, win_ {win}, priority_ {p}
     {
         can_move_to_pa_.store(false);
         can_move_to_runway_.store(false);
@@ -45,6 +40,11 @@ class Airplane
     void allow_move_to_pa() { can_move_to_pa_.store(true); };
     void allow_move_to_runway() { can_move_to_runway_.store(true); };
     bool has_finished_action() { return finished_action_.load(); }
+    void set_route(Route route)
+    {
+        route_    = route;
+        position_ = route_.start_;
+    }
 
    protected:
     std::chrono::milliseconds speed_;

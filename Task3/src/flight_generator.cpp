@@ -10,12 +10,10 @@ Flight_Generator::Flight_Generator(Window& win, Control_Tower& ct,
 
 void Flight_Generator::generate_loop()
 {
-    auto route =
-        Route(win_.HANGAR_OUT, {win_.PASSENGER_STOP, win_.LOWER_LANE_Y},
-              win_.RIGHT_RUNWAY_START, win_.RIGHT_RUNWAY_END);
-
     ct_.create_flight(std::make_unique<Outgoing_Airplane>(
-        std::chrono::milliseconds(50), win_, route));
+        std::chrono::milliseconds(50), win_));
+    ct_.create_flight(std::make_unique<Outgoing_Airplane>(
+        std::chrono::milliseconds(50), win_));
     /*
     while (!ct_.should_shutdown())
     {
