@@ -47,8 +47,8 @@ class Window
 
     void clear_pos(const std::pair<unsigned, unsigned>& coords);
 
-    void light_up_upper_pa(const short color);
-    void light_up_lower_pa(const short color);
+    void light_up_pa(
+        const std::pair<size_t, size_t> passenger_area, const short color);
     void change_status(const short stat, std::string status, const short color);
 
    private:

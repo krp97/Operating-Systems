@@ -5,16 +5,11 @@ Flight_Generator::Flight_Generator(Window& win, Control_Tower& ct,
                                    std::chrono::milliseconds frequency)
     : win_ {win}, ct_ {ct}, out_in_ratio_ {out_in_ratio}, frequency_ {frequency}
 {
-    generate_loop();
+    f_generator_th_ = std::thread(&Flight_Generator::generate_loop, this);
 }
 
 void Flight_Generator::generate_loop()
 {
-    ct_.create_flight(std::make_unique<Outgoing_Airplane>(
-        std::chrono::milliseconds(50), win_));
-    ct_.create_flight(std::make_unique<Outgoing_Airplane>(
-        std::chrono::milliseconds(50), win_));
-    /*
     while (!ct_.should_shutdown())
     {
         int outgoing_planes = 1, incoming_planes = 1;
@@ -25,15 +20,15 @@ void Flight_Generator::generate_loop()
 
         for (; outgoing_planes > 0; --outgoing_planes)
         {
-            std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
             ct_.create_flight(std::make_unique<Outgoing_Airplane>(
-                std::chrono::milliseconds(frequency_), win_, win_.HANGAR_OUT));
+                std::chrono::milliseconds(40), win_));
         }
-        for (; incoming_planes > 0; --incoming_planes)
+        /*for (; incoming_planes > 0; --incoming_planes)
         {
-            std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
             ct_.create_flight(std::make_unique<Incoming_Airplane>(
-                std::chrono::milliseconds(frequency_), win_, win_.HANGAR_OUT));
-        }
-    }*/
+                std::chrono::milliseconds(40), win_));
+        }*/
+    }
 }

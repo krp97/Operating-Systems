@@ -9,11 +9,15 @@ Incoming_Airplane::Incoming_Airplane(std::chrono::milliseconds speed,
 
 void Incoming_Airplane::start_action()
 {
+    while (!can_move_to_runway_.load())
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
     land();
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    finished_action_.store(true);
+    while (!can_move_to_pa_.load())
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
     move_to_passenger_area();
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
-    win_.light_up_upper_pa(win_.WHITE);
+    // win_.light_up_upper_pa(win_.WHITE);
 
     move_horizontally(position_, route_.end_);
     win_.clear_pos(position_);
@@ -22,7 +26,7 @@ void Incoming_Airplane::start_action()
 void Incoming_Airplane::move_to_passenger_area()
 {
     move_horizontally(position_, route_.passenger_area_);
-    win_.light_up_upper_pa(win_.BLUE);
+    // win_.light_up_upper_pa(win_.BLUE);
 }
 
 void Incoming_Airplane::land()

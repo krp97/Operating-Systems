@@ -39,6 +39,7 @@ class Airplane
 
     void allow_move_to_pa() { can_move_to_pa_.store(true); };
     void allow_move_to_runway() { can_move_to_runway_.store(true); };
+    bool has_finished_pa() { return finished_pa_.load(); };
     bool has_finished_action() { return finished_action_.load(); }
     void set_route(Route route)
     {
@@ -54,6 +55,7 @@ class Airplane
     Route route_;
 
     std::atomic_bool can_move_to_pa_;
+    std::atomic_bool finished_pa_;
     std::atomic_bool can_move_to_runway_;
     std::atomic_bool finished_action_;
 

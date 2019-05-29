@@ -19,8 +19,8 @@ Window::Window()
           16, static_cast<size_t>(getmaxy(stdscr) - (BOTTOM_PADDING + 2))},
       HANGAR_OUT_UPPER {
           16, static_cast<size_t>(getmaxy(stdscr) - (BOTTOM_PADDING + 4))},
-      LEFT_RUNWAY_END {LEFT_RUNWAY_START.first, 8},
-      RIGHT_RUNWAY_END {RIGHT_RUNWAY_START.first, 8},
+      LEFT_RUNWAY_END {LEFT_RUNWAY_START.first, 16},
+      RIGHT_RUNWAY_END {RIGHT_RUNWAY_START.first, 16},
       win_(newwin(getmaxy(stdscr), getmaxx(stdscr), 0, 0), [](WINDOW* w) {
           delwin(w);
           endwin();
@@ -218,20 +218,16 @@ void Window::clear_pos(const std::pair<unsigned, unsigned>& coords)
     wrefresh(win_.get());
 }
 
-void Window::light_up_upper_pa(const short color)
+void Window::light_up_pa(const std::pair<size_t, size_t> passenger_area,
+                         const short color)
 {
     std::lock_guard<std::mutex> l_g(mtx_);
     wattron(win_.get(), COLOR_PAIR(color));
-    place_upper_pa();
-    wattroff(win_.get(), COLOR_PAIR(color));
-    wrefresh(win_.get());
-}
-
-void Window::light_up_lower_pa(const short color)
-{
-    std::lock_guard<std::mutex> l_g(mtx_);
-    wattron(win_.get(), COLOR_PAIR(color));
-    place_lower_pa();
+    if (passenger_area ==
+        std::make_pair(PASSENGER_STOP, LOWER_LANE_Y))
+        place_lower_pa();
+    else
+        place_upper_pa();
     wattroff(win_.get(), COLOR_PAIR(color));
     wrefresh(win_.get());
 }

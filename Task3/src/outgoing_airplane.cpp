@@ -15,12 +15,12 @@ void Outgoing_Airplane::start_action()
 void Outgoing_Airplane::move_to_passenger_area()
 {
     move_horizontally(position_, route_.passenger_area_);
-    win_.light_up_lower_pa(win_.BLUE);
+    win_.light_up_pa(route_.passenger_area_, win_.BLUE);
 }
 
 void Outgoing_Airplane::move_to_runway()
 {
-    win_.light_up_lower_pa(win_.WHITE);
+    win_.light_up_pa(route_.passenger_area_, win_.WHITE);
     move_horizontally(position_, route_.runway_start_);
 }
 
@@ -31,6 +31,7 @@ void Outgoing_Airplane::take_off()
 
     move_to_passenger_area();
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    finished_pa_.store(true);
 
     while (!can_move_to_runway_.load())
         std::this_thread::sleep_for(std::chrono::milliseconds(50));

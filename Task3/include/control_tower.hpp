@@ -16,9 +16,12 @@ class Control_Tower
     Control_Tower& operator=(Control_Tower&&) = default;
     ~Control_Tower()                          = default;
 
-    void idle_func();
     void create_flight(std::unique_ptr<Airplane> flight);
+
+    void idle_func();
     void schedule_flight();
+    void move_active_flights();
+
     bool should_shutdown() const;
 
    private:
@@ -45,9 +48,16 @@ class Control_Tower
         std::vector<std::unique_ptr<Airplane>>::const_iterator flight);
 
     bool can_land_on_runway(
-        std::unique_ptr<Airplane> passenger_area,
-        std::unique_ptr<Airplane> runway,
+        const std::unique_ptr<Airplane>& passenger_area,
+        const std::unique_ptr<Airplane>& runway,
         std::vector<std::unique_ptr<Airplane>>::const_iterator flight);
 
+    void cleanup_finished_flights();
+    void cleanup_flight_at(std::unique_ptr<Airplane>& checkpoint,
+                           Airplane::Action action_type);
+    void move_outgoing_flights(std::unique_ptr<Airplane>& passenger_area,
+                               std::unique_ptr<Airplane>& runway);
+    void move_incoming_flights(std::unique_ptr<Airplane>& passenger_area,
+                               std::unique_ptr<Airplane>& runway);
     std::vector<std::unique_ptr<Airplane>>::iterator get_next_flight();
 };

@@ -11,7 +11,7 @@ class Flight_Generator
     Flight_Generator& operator=(const Flight_Generator&) = delete;
     Flight_Generator(Flight_Generator&&)                 = default;
     Flight_Generator& operator=(Flight_Generator&&) = default;
-    ~Flight_Generator()                             = default;
+    ~Flight_Generator() { f_generator_th_.join(); };
 
     void generate_loop();
 
@@ -20,4 +20,5 @@ class Flight_Generator
     Control_Tower& ct_;
     float out_in_ratio_;
     std::chrono::milliseconds frequency_;
+    std::thread f_generator_th_;
 };
