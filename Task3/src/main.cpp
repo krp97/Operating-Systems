@@ -2,9 +2,8 @@
 #include <ncurses.h>
 #include <chrono>
 #include <thread>
-#include "../include/airplane.hpp"
-#include "../include/incoming_airplane.hpp"
-#include "../include/outgoing_airplane.hpp"
+#include "../include/control_tower.hpp"
+#include "../include/flight_generator.hpp"
 #include "../include/window.hpp"
 
 int main()
@@ -12,11 +11,9 @@ int main()
     initscr();
     start_color();
     Window win;
-    //Airplane* oa = new Outgoing_Airplane(std::chrono::milliseconds(40), win,
-                                        // win.HANGAR_OUT);
-    //Airplane* ia = new Incoming_Airplane(std::chrono::milliseconds(40), win,
-                                         //win.LEFT_RUNWAY_END);
-    getchar();
-    //delete oa, ia;
+    Control_Tower ct;
+    Flight_Generator fg =
+        Flight_Generator(win, ct, 1, std::chrono::milliseconds(10));
+    ct.idle_func();
     return 0;
 }

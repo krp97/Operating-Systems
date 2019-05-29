@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <chrono>
 #include <functional>
 #include <thread>
@@ -24,7 +25,11 @@ class Airplane
           win_ {win},
           route_ {route},
           priority_ {p},
-          position_ {route.start_} {};
+          position_ {route.start_}
+    {
+        can_move_to_pa_.store(false);
+        can_move_to_runway_.store(false);
+    };
 
     virtual ~Airplane() = default;
 
@@ -37,12 +42,20 @@ class Airplane
         return this->priority_.get_priority() > b.priority_.get_priority();
     };
 
+    void allow_move_to_pa() { can_move_to_pa_.store(true); };
+    void allow_move_to_runway() { can_move_to_runway_.store(true); };
+    bool has_finished_action() { return finished_action_.load(); }
+
    protected:
     std::chrono::milliseconds speed_;
     Window& win_;
     std::pair<size_t, size_t> position_;
     Priority priority_;
     Route route_;
+
+    std::atomic_bool can_move_to_pa_;
+    std::atomic_bool can_move_to_runway_;
+    std::atomic_bool finished_action_;
 
     void move_horizontally(std::pair<size_t, size_t>& prev,
                            const std::pair<size_t, size_t> next)

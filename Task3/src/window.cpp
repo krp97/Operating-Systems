@@ -50,6 +50,10 @@ void Window::draw_foreground()
     draw_stats();
     place_connections();
     place_hangar();
+
+    // These have to be manually locked, because they're called by the
+    // public methods, which already hold the lock.
+    std::unique_lock<std::mutex> l_g(mtx_);
     place_upper_pa();
     place_lower_pa();
     draw_plane_count(0, 0);
@@ -166,7 +170,6 @@ void Window::place_upper_pa()
     size_t area_height  = 2;
     size_t x_start      = (max_x() / 2) - (area_width / 2);
     size_t upper_area_y = max_y() - BOTTOM_PADDING - 4 - area_height - 1;
-    std::lock_guard<std::mutex> l_g(mtx_);
     ncurses_rectangle(upper_area_y, x_start, upper_area_y + area_height,
                       x_start + area_width);
     mvwprintw(win_.get(), upper_area_y + 1, x_start + 2, "PA1");
@@ -178,7 +181,6 @@ void Window::place_lower_pa()
     size_t area_height  = 2;
     size_t x_start      = (max_x() / 2) - (area_width / 2);
     size_t lower_area_y = max_y() - BOTTOM_PADDING + 1;
-    std::lock_guard<std::mutex> l_g(mtx_);
     ncurses_rectangle(lower_area_y, x_start, lower_area_y + area_height,
                       x_start + area_width);
 
@@ -236,7 +238,6 @@ void Window::draw_plane_count(int incoming, int outgoing)
     std::string incoming_str = "Incoming: " + std::to_string(incoming);
     std::string outgoing_str = "Outgoing: " + std::to_string(outgoing);
 
-    std::lock_guard<std::mutex> l_g(mtx_);
     wattron(win_.get(), COLOR_PAIR(RED));
     mvwprintw(win_.get(), max_y() - 7, 3, incoming_str.c_str());
     mvwprintw(win_.get(), max_y() - 6, 3, outgoing_str.c_str());

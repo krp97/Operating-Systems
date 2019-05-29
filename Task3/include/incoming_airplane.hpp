@@ -1,3 +1,5 @@
+#pragma once
+
 #include "airplane.hpp"
 class Incoming_Airplane : public Airplane
 {
