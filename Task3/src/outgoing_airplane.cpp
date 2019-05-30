@@ -15,12 +15,13 @@ void Outgoing_Airplane::start_action()
 void Outgoing_Airplane::move_to_passenger_area()
 {
     move_horizontally(position_, route_.passenger_area_);
-    win_.light_up_pa(route_.passenger_area_, win_.BLUE);
+    win_.occupy_pa(route_.passenger_area_);
 }
 
 void Outgoing_Airplane::move_to_runway()
 {
-    win_.light_up_pa(route_.passenger_area_, win_.WHITE);
+    win_.free_pa(route_.passenger_area_);
+    win_.occupy_runway(route_.runway_start_);
     move_horizontally(position_, route_.runway_start_);
 }
 
@@ -40,6 +41,7 @@ void Outgoing_Airplane::take_off()
     move_vertically(position_, route_.end_);
     win_.clear_pos(position_);
     finished_second_.store(true);
+    win_.free_runway(route_.runway_start_);
 }
 
 Airplane::Action Outgoing_Airplane::get_action_type() const

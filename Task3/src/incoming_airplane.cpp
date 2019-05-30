@@ -16,9 +16,8 @@ void Incoming_Airplane::start_action()
     while (!second_move_.load())
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
     move_to_passenger_area();
-    win_.light_up_pa(route_.passenger_area_, win_.BLUE);
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
-    win_.light_up_pa(route_.passenger_area_, win_.WHITE);
+    win_.free_pa(route_.passenger_area_);
     move_horizontally(position_, route_.end_);
     win_.clear_pos(position_);
     finished_second_.store(true);
@@ -26,11 +25,14 @@ void Incoming_Airplane::start_action()
 
 void Incoming_Airplane::move_to_passenger_area()
 {
+    win_.free_runway(route_.runway_start_);
     move_horizontally(position_, route_.passenger_area_);
+    win_.occupy_pa(route_.passenger_area_);
 }
 
 void Incoming_Airplane::land()
 {
+    win_.occupy_runway(route_.runway_start_);
     move_vertically(position_, route_.runway_start_);
 }
 

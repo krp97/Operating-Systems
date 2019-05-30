@@ -46,8 +46,10 @@ class Window
                         const std::pair<unsigned, unsigned>& next_coords);
     void clear_pos(const std::pair<unsigned, unsigned>& coords);
 
-    void light_up_pa(const std::pair<size_t, size_t> passenger_area,
-                     const short color);
+    void free_pa(const std::pair<size_t, size_t> passenger_area);
+    void occupy_pa(const std::pair<size_t, size_t> passenger_area);
+    void free_runway(const std::pair<size_t, size_t> runway_start);
+    void occupy_runway(const std::pair<size_t, size_t> runway_start);
     void change_status(const short stat, std::string status, const short color);
 
    private:

@@ -83,8 +83,8 @@ void Window::draw_stats()
     mvwprintw(win_.get(), 8, 13, "PA2: ");
     wattroff(win_.get(), COLOR_PAIR(WHITE));
     l_g.unlock();
-    change_status(LEFT_RUNWAY_STAT, "Online", GREEN);
-    change_status(RIGHT_RUNWAY_STAT, "Online", GREEN);
+    change_status(LEFT_RUNWAY_STAT, "Free", GREEN);
+    change_status(RIGHT_RUNWAY_STAT, "Free", GREEN);
     change_status(PA1_STAT, "Free", GREEN);
     change_status(PA2_STAT, "Free", GREEN);
 }
@@ -103,11 +103,67 @@ void Window::draw_keyfuncs()
 void Window::change_status(const short stat, std::string status,
                            const short color)
 {
-    std::lock_guard<std::mutex> l_g(mtx_);
     wattron(win_.get(), COLOR_PAIR(color));
     mvwprintw(win_.get(), stat, 18, status.c_str());
     wattroff(win_.get(), COLOR_PAIR(color));
     wrefresh(win_.get());
+}
+
+void Window::free_pa(const std::pair<size_t, size_t> passenger_area)
+{
+    std::lock_guard<std::mutex> l_g(mtx_);
+    if (passenger_area == std::make_pair(PASSENGER_STOP, LOWER_LANE_Y))
+    {
+        change_status(PA2_STAT, "Free    ", GREEN);
+        wattron(win_.get(), COLOR_PAIR(WHITE));
+        place_lower_pa();
+        wattroff(win_.get(), COLOR_PAIR(WHITE));
+    }
+    else
+    {
+        change_status(PA1_STAT, "Free    ", GREEN);
+        wattron(win_.get(), COLOR_PAIR(WHITE));
+        place_upper_pa();
+        wattroff(win_.get(), COLOR_PAIR(WHITE));
+    }
+    wrefresh(win_.get());
+}
+
+void Window::occupy_pa(const std::pair<size_t, size_t> passenger_area)
+{
+    std::lock_guard<std::mutex> l_g(mtx_);
+    if (passenger_area == std::make_pair(PASSENGER_STOP, LOWER_LANE_Y))
+    {
+        change_status(PA2_STAT, "Occupied", BLUE);
+        wattron(win_.get(), COLOR_PAIR(BLUE));
+        place_lower_pa();
+        wattroff(win_.get(), COLOR_PAIR(BLUE));
+    }
+    else
+    {
+        change_status(PA1_STAT, "Occupied", BLUE);
+        wattron(win_.get(), COLOR_PAIR(BLUE));
+        place_upper_pa();
+        wattroff(win_.get(), COLOR_PAIR(BLUE));
+    }
+    wrefresh(win_.get());
+}
+
+void Window::free_runway(const std::pair<size_t, size_t> runway_start)
+{
+    std::lock_guard<std::mutex> l_g(mtx_);
+    if (runway_start == LEFT_RUNWAY_START)
+        change_status(LEFT_RUNWAY_STAT, "Free    ", GREEN);
+    else
+        change_status(RIGHT_RUNWAY_STAT, "Free    ", GREEN);
+}
+
+void Window::occupy_runway(const std::pair<size_t, size_t> runway_start)
+{
+    if (runway_start == LEFT_RUNWAY_START)
+        change_status(LEFT_RUNWAY_STAT, "Occupied", BLUE);
+    else
+        change_status(RIGHT_RUNWAY_STAT, "Occupied", BLUE);
 }
 
 void Window::place_connections()
@@ -215,19 +271,6 @@ void Window::clear_pos(const std::pair<unsigned, unsigned>& coords)
 {
     std::lock_guard<std::mutex> l_g(mtx_);
     mvwprintw(win_.get(), coords.second, coords.first, " ");
-    wrefresh(win_.get());
-}
-
-void Window::light_up_pa(const std::pair<size_t, size_t> passenger_area,
-                         const short color)
-{
-    std::lock_guard<std::mutex> l_g(mtx_);
-    wattron(win_.get(), COLOR_PAIR(color));
-    if (passenger_area == std::make_pair(PASSENGER_STOP, LOWER_LANE_Y))
-        place_lower_pa();
-    else
-        place_upper_pa();
-    wattroff(win_.get(), COLOR_PAIR(color));
     wrefresh(win_.get());
 }
 
