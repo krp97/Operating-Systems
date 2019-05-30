@@ -66,7 +66,7 @@ void Control_Tower::schedule_outgoing_flight(
             win_.RIGHT_RUNWAY_START, win_.RIGHT_RUNWAY_END));
         passenger_area_2_ = std::move(*flight);
         flights_.erase(flight);
-        passenger_area_2_->allow_move_to_pa();
+        passenger_area_2_->allow_first_move();
     }
     else if (left_runw_perm)
     {
@@ -75,7 +75,7 @@ void Control_Tower::schedule_outgoing_flight(
             win_.LEFT_RUNWAY_START, win_.LEFT_RUNWAY_END));
         passenger_area_1_ = std::move(*flight);
         flights_.erase(flight);
-        passenger_area_1_->allow_move_to_pa();
+        passenger_area_1_->allow_first_move();
     }
 }
 
@@ -111,16 +111,16 @@ void Control_Tower::schedule_incoming_flight(
             win_.RIGHT_RUNWAY_START, win_.HANGAR_OUT_LOWER));
         right_runway_ = std::move(*flight);
         flights_.erase(flight);
-        right_runway_->allow_move_to_runway();
+        right_runway_->allow_first_move();
     }
     else if (left_runw_perm)
     {
         (*flight)->set_route(Route(
             win_.LEFT_RUNWAY_END, {win_.PASSENGER_STOP, win_.UPPER_LANE_Y},
             win_.LEFT_RUNWAY_START, win_.HANGAR_OUT_UPPER));
-        right_runway_ = std::move(*flight);
+        left_runway_ = std::move(*flight);
         flights_.erase(flight);
-        right_runway_->allow_move_to_runway();
+        left_runway_->allow_first_move();
     }
 }
 
@@ -147,6 +147,8 @@ void Control_Tower::move_active_flights()
     cleanup_finished_flights();
     move_outgoing_flights(passenger_area_1_, left_runway_);
     move_outgoing_flights(passenger_area_2_, right_runway_);
+    move_incoming_flights(passenger_area_1_, left_runway_);
+    move_incoming_flights(passenger_area_2_, right_runway_);
 }
 
 void Control_Tower::cleanup_finished_flights()
@@ -162,7 +164,7 @@ void Control_Tower::cleanup_flight_at(std::unique_ptr<Airplane>& checkpoint,
 {
     if (checkpoint)
         if (checkpoint->get_action_type() == action_type)
-            if (checkpoint->has_finished_action())
+            if (checkpoint->has_finished_second_stage())
                 checkpoint.reset(nullptr);
 }
 
@@ -174,10 +176,10 @@ void Control_Tower::move_outgoing_flights(
     {
         if (passenger_area->get_action_type() == Airplane::Action::OUTGOING)
         {
-            if (!runway && passenger_area_2_->has_finished_pa())
+            if (!runway && passenger_area->has_finished_first_stage())
             {
                 runway = std::move(passenger_area);
-                runway->allow_move_to_runway();
+                runway->allow_second_move();
             }
         }
     }
@@ -191,10 +193,10 @@ void Control_Tower::move_incoming_flights(
     {
         if (runway->get_action_type() == Airplane::Action::INCOMING)
         {
-            if (!passenger_area && true)  // here
+            if (!passenger_area && runway->has_finished_first_stage())
             {
-                runway = std::move(passenger_area);
-                runway->allow_move_to_runway();
+                passenger_area = std::move(runway);
+                passenger_area->allow_second_move();
             }
         }
     }

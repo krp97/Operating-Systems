@@ -44,11 +44,10 @@ class Window
 
     void move_on_screen(const std::pair<unsigned, unsigned>& prev_coords,
                         const std::pair<unsigned, unsigned>& next_coords);
-
     void clear_pos(const std::pair<unsigned, unsigned>& coords);
 
-    void light_up_pa(
-        const std::pair<size_t, size_t> passenger_area, const short color);
+    void light_up_pa(const std::pair<size_t, size_t> passenger_area,
+                     const short color);
     void change_status(const short stat, std::string status, const short color);
 
    private:

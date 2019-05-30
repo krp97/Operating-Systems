@@ -1,5 +1,5 @@
 #include "../include/incoming_airplane.hpp"
-
+#include <iostream>
 Incoming_Airplane::Incoming_Airplane(std::chrono::milliseconds speed,
                                      Window& win)
     : Airplane(speed, win, Priority(utils::random_int(3, 8)))
@@ -9,24 +9,24 @@ Incoming_Airplane::Incoming_Airplane(std::chrono::milliseconds speed,
 
 void Incoming_Airplane::start_action()
 {
-    while (!can_move_to_runway_.load())
+    while (!first_move_.load())
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
     land();
-    finished_action_.store(true);
-    while (!can_move_to_pa_.load())
+    finished_first_.store(true);
+    while (!second_move_.load())
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
     move_to_passenger_area();
+    win_.light_up_pa(route_.passenger_area_, win_.BLUE);
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
-    // win_.light_up_upper_pa(win_.WHITE);
-
+    win_.light_up_pa(route_.passenger_area_, win_.WHITE);
     move_horizontally(position_, route_.end_);
     win_.clear_pos(position_);
+    finished_second_.store(true);
 }
 
 void Incoming_Airplane::move_to_passenger_area()
 {
     move_horizontally(position_, route_.passenger_area_);
-    // win_.light_up_upper_pa(win_.BLUE);
 }
 
 void Incoming_Airplane::land()
@@ -36,5 +36,5 @@ void Incoming_Airplane::land()
 
 Airplane::Action Incoming_Airplane::get_action_type() const
 {
-    return Airplane::Action::OUTGOING;
+    return Airplane::Action::INCOMING;
 }

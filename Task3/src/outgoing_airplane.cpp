@@ -26,20 +26,20 @@ void Outgoing_Airplane::move_to_runway()
 
 void Outgoing_Airplane::take_off()
 {
-    while (!can_move_to_pa_.load())
+    while (!first_move_.load())
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
     move_to_passenger_area();
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
-    finished_pa_.store(true);
+    finished_first_.store(true);
 
-    while (!can_move_to_runway_.load())
+    while (!second_move_.load())
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
     move_to_runway();
     move_vertically(position_, route_.end_);
     win_.clear_pos(position_);
-    finished_action_.store(true);
+    finished_second_.store(true);
 }
 
 Airplane::Action Outgoing_Airplane::get_action_type() const

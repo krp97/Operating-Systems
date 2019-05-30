@@ -22,8 +22,8 @@ class Airplane
     Airplane(std::chrono::milliseconds speed, Window& win, Priority p)
         : speed_ {speed}, win_ {win}, priority_ {p}
     {
-        can_move_to_pa_.store(false);
-        can_move_to_runway_.store(false);
+        first_move_.store(false);
+        second_move_.store(false);
     };
 
     virtual ~Airplane() = default;
@@ -37,10 +37,10 @@ class Airplane
         return this->priority_.get_priority() > b.priority_.get_priority();
     };
 
-    void allow_move_to_pa() { can_move_to_pa_.store(true); };
-    void allow_move_to_runway() { can_move_to_runway_.store(true); };
-    bool has_finished_pa() { return finished_pa_.load(); };
-    bool has_finished_action() { return finished_action_.load(); }
+    void allow_first_move() { first_move_.store(true); };
+    void allow_second_move() { second_move_.store(true); };
+    bool has_finished_first_stage() { return finished_first_.load(); };
+    bool has_finished_second_stage() { return finished_second_.load(); }
     void set_route(Route route)
     {
         route_    = route;
@@ -54,10 +54,10 @@ class Airplane
     Priority priority_;
     Route route_;
 
-    std::atomic_bool can_move_to_pa_;
-    std::atomic_bool finished_pa_;
-    std::atomic_bool can_move_to_runway_;
-    std::atomic_bool finished_action_;
+    std::atomic_bool first_move_;
+    std::atomic_bool finished_first_;
+    std::atomic_bool second_move_;
+    std::atomic_bool finished_second_;
 
     void move_horizontally(std::pair<size_t, size_t>& prev,
                            const std::pair<size_t, size_t> next)

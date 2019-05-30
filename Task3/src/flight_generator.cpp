@@ -20,15 +20,15 @@ void Flight_Generator::generate_loop()
 
         for (; outgoing_planes > 0; --outgoing_planes)
         {
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             ct_.create_flight(std::make_unique<Outgoing_Airplane>(
                 std::chrono::milliseconds(40), win_));
         }
-        /*for (; incoming_planes > 0; --incoming_planes)
+        for (; incoming_planes > 0; --incoming_planes)
         {
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             ct_.create_flight(std::make_unique<Incoming_Airplane>(
                 std::chrono::milliseconds(40), win_));
-        }*/
+        }
     }
 }

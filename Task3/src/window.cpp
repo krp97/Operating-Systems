@@ -9,7 +9,7 @@ Window::Window()
                          getmaxy(stdscr) - BOTTOM_PADDING - 4},
       RIGHT_RUNWAY_START {
           LEFT_RUNWAY_START.first + RUNWAY_WIDTH + RUNWAY_CONNECTION_WIDTH,
-          getmaxy(stdscr) - BOTTOM_PADDING - 4},
+          getmaxy(stdscr) - BOTTOM_PADDING - 2},
       PASSENGER_STOP {static_cast<size_t>(getmaxx(stdscr) / 2)},
       UPPER_LANE_Y {
           static_cast<size_t>(getmaxy(stdscr) - (BOTTOM_PADDING + 4))},
@@ -223,8 +223,7 @@ void Window::light_up_pa(const std::pair<size_t, size_t> passenger_area,
 {
     std::lock_guard<std::mutex> l_g(mtx_);
     wattron(win_.get(), COLOR_PAIR(color));
-    if (passenger_area ==
-        std::make_pair(PASSENGER_STOP, LOWER_LANE_Y))
+    if (passenger_area == std::make_pair(PASSENGER_STOP, LOWER_LANE_Y))
         place_lower_pa();
     else
         place_upper_pa();
