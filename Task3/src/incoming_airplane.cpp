@@ -10,11 +10,11 @@ Incoming_Airplane::Incoming_Airplane(std::chrono::milliseconds speed,
 void Incoming_Airplane::start_action()
 {
     while (!first_move_.load())
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
     land();
     finished_first_.store(true);
     while (!second_move_.load())
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
     move_to_passenger_area();
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
     win_.free_pa(route_.passenger_area_);

@@ -20,7 +20,13 @@ class Airplane
 
     Airplane() = delete;
     Airplane(std::chrono::milliseconds speed, Window& win, Priority p)
-        : speed_ {speed}, win_ {win}, priority_ {p}
+        : speed_ {speed},
+          win_ {win},
+          priority_ {p},
+          first_move_ {false},
+          finished_first_ {false},
+          second_move_ {false},
+          finished_second_ {false}
     {
         first_move_.store(false);
         second_move_.store(false);

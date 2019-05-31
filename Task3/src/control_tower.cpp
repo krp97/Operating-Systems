@@ -64,8 +64,10 @@ void Control_Tower::schedule_outgoing_flight(
         (*flight)->set_route(Route(
             win_.HANGAR_OUT_LOWER, {win_.PASSENGER_STOP, win_.LOWER_LANE_Y},
             win_.RIGHT_RUNWAY_START, win_.RIGHT_RUNWAY_END));
+        std::unique_lock<std::mutex> lk(flights_mtx_);
         passenger_area_2_ = std::move(*flight);
         flights_.erase(flight);
+        lk.unlock();
         passenger_area_2_->allow_first_move();
     }
     else if (left_runw_perm)
@@ -73,8 +75,10 @@ void Control_Tower::schedule_outgoing_flight(
         (*flight)->set_route(Route(
             win_.HANGAR_OUT_UPPER, {win_.PASSENGER_STOP, win_.UPPER_LANE_Y},
             win_.LEFT_RUNWAY_START, win_.LEFT_RUNWAY_END));
+        std::unique_lock<std::mutex> lk(flights_mtx_);
         passenger_area_1_ = std::move(*flight);
         flights_.erase(flight);
+        lk.unlock();
         passenger_area_1_->allow_first_move();
     }
 }
@@ -109,8 +113,10 @@ void Control_Tower::schedule_incoming_flight(
         (*flight)->set_route(Route(
             win_.RIGHT_RUNWAY_END, {win_.PASSENGER_STOP, win_.LOWER_LANE_Y},
             win_.RIGHT_RUNWAY_START, win_.HANGAR_OUT_LOWER));
+        std::unique_lock<std::mutex> lk(flights_mtx_);
         right_runway_ = std::move(*flight);
         flights_.erase(flight);
+        lk.unlock();
         right_runway_->allow_first_move();
     }
     else if (left_runw_perm)
@@ -118,8 +124,10 @@ void Control_Tower::schedule_incoming_flight(
         (*flight)->set_route(Route(
             win_.LEFT_RUNWAY_END, {win_.PASSENGER_STOP, win_.UPPER_LANE_Y},
             win_.LEFT_RUNWAY_START, win_.HANGAR_OUT_UPPER));
+        std::unique_lock<std::mutex> lk(flights_mtx_);
         left_runway_ = std::move(*flight);
         flights_.erase(flight);
+        lk.unlock();
         left_runway_->allow_first_move();
     }
 }
