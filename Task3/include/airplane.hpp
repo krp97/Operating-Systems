@@ -12,6 +12,7 @@
 class Airplane
 {
    public:
+    static std::mutex priority_mtx;
     enum class Action
     {
         OUTGOING,

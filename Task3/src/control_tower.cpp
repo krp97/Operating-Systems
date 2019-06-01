@@ -16,7 +16,10 @@ void Control_Tower::create_flight(std::unique_ptr<Airplane> flight)
 std::vector<std::unique_ptr<Airplane>>::iterator
 Control_Tower::get_next_flight()
 {
-    std::lock_guard<std::mutex> lk(flights_mtx_);
+    std::unique_lock<std::mutex> flights_lock(flights_mtx_, std::defer_lock);
+    std::unique_lock<std::mutex> priority_lock(Airplane::priority_mtx,
+                                               std::defer_lock);
+    std::lock(flights_lock, priority_lock);
     return std::max_element(flights_.begin(), flights_.end());
 }
 

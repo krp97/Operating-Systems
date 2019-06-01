@@ -28,14 +28,14 @@ void Outgoing_Airplane::move_to_runway()
 void Outgoing_Airplane::take_off()
 {
     while (!first_move_.load())
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
     move_to_passenger_area();
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
     finished_first_.store(true);
 
     while (!second_move_.load())
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
     move_to_runway();
     move_vertically(position_, route_.end_);

@@ -160,6 +160,7 @@ void Window::free_runway(const std::pair<size_t, size_t> runway_start)
 
 void Window::occupy_runway(const std::pair<size_t, size_t> runway_start)
 {
+    std::lock_guard<std::mutex> l_g(mtx_);
     if (runway_start == LEFT_RUNWAY_START)
         change_status(LEFT_RUNWAY_STAT, "Occupied", BLUE);
     else
