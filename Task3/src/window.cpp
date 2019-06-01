@@ -28,7 +28,6 @@ Window::Window()
 
 {
     use_default_colors();
-    draw_foreground();
     curs_set(false);
 }
 
@@ -42,6 +41,27 @@ void Window::init_pairs()
     init_pair(BLUE, COLOR_BLUE, -1);
     init_pair(GREEN, COLOR_GREEN, -1);
     init_pair(PINK, COLOR_MAGENTA, -1);
+}
+
+void Window::update_loading_bar(const short stat_v_pos, const int pegs)
+{
+    std::lock_guard<std::mutex> l_g(mtx_);
+    int dashes = 15 - pegs;
+    std::string bar_string;
+
+    if (dashes >= 0)
+    {
+        bar_string = std::string("[" + std::string(pegs, '#') +
+                                 std::string(dashes, '-') + "]");
+        mvwprintw(win_.get(), stat_v_pos, 26, bar_string.c_str());
+        wrefresh(win_.get());
+    }
+    else
+    {
+        bar_string = std::string(17, ' ');
+        mvwprintw(win_.get(), stat_v_pos, 26, bar_string.c_str());
+        mvwprintw(win_.get(), stat_v_pos, 18, "Free      ");
+    }
 }
 
 void Window::draw_foreground()
@@ -59,7 +79,6 @@ void Window::draw_foreground()
     std::unique_lock<std::mutex> l_g(mtx_);
     place_upper_pa();
     place_lower_pa();
-    draw_plane_count(0, 0);
     wrefresh(win_.get());
 }
 
@@ -153,18 +172,27 @@ void Window::free_runway(const std::pair<size_t, size_t> runway_start)
 {
     std::lock_guard<std::mutex> l_g(mtx_);
     if (runway_start == LEFT_RUNWAY_START)
-        change_status(LEFT_RUNWAY_STAT, "Free    ", GREEN);
+        change_status(LEFT_RUNWAY_STAT, "Free" + std::string(" ", 8), GREEN);
     else
-        change_status(RIGHT_RUNWAY_STAT, "Free    ", GREEN);
+        change_status(RIGHT_RUNWAY_STAT, "Free" + std::string("", 8), GREEN);
 }
 
 void Window::occupy_runway(const std::pair<size_t, size_t> runway_start)
 {
     std::lock_guard<std::mutex> l_g(mtx_);
     if (runway_start == LEFT_RUNWAY_START)
-        change_status(LEFT_RUNWAY_STAT, "Occupied", BLUE);
+        change_status(LEFT_RUNWAY_STAT, "Occupied    ", BLUE);
     else
-        change_status(RIGHT_RUNWAY_STAT, "Occupied", BLUE);
+        change_status(RIGHT_RUNWAY_STAT, "Occupied    ", BLUE);
+}
+
+void Window::break_runway(const std::pair<size_t, size_t> runway_start)
+{
+    std::lock_guard<std::mutex> l_g(mtx_);
+    if (runway_start == LEFT_RUNWAY_START)
+        change_status(LEFT_RUNWAY_STAT, "Out of order", RED);
+    else
+        change_status(RIGHT_RUNWAY_STAT, "Out of order", RED);
 }
 
 void Window::place_connections()
@@ -220,7 +248,7 @@ void Window::place_hangar()
     std::lock_guard<std::mutex> l_g(mtx_);
     wattron(win_.get(), COLOR_PAIR(RED));
     ncurses_rectangle(max_y() - 11, 1, max_y() - 3, 15);
-    mvwprintw(win_.get(), max_y() - 9, 5, "Hangar");
+    mvwprintw(win_.get(), max_y() - 7, 5, "Hangar");
     wattroff(win_.get(), COLOR_PAIR(RED));
 }
 
@@ -272,18 +300,6 @@ void Window::clear_pos(const std::pair<unsigned, unsigned>& coords)
 {
     std::lock_guard<std::mutex> l_g(mtx_);
     mvwprintw(win_.get(), coords.second, coords.first, " ");
-    wrefresh(win_.get());
-}
-
-void Window::draw_plane_count(int incoming, int outgoing)
-{
-    std::string incoming_str = "Incoming: " + std::to_string(incoming);
-    std::string outgoing_str = "Outgoing: " + std::to_string(outgoing);
-
-    wattron(win_.get(), COLOR_PAIR(RED));
-    mvwprintw(win_.get(), max_y() - 7, 3, incoming_str.c_str());
-    mvwprintw(win_.get(), max_y() - 6, 3, outgoing_str.c_str());
-    wattroff(win_.get(), COLOR_PAIR(RED));
     wrefresh(win_.get());
 }
 

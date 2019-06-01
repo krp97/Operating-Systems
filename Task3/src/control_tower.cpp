@@ -1,8 +1,11 @@
 #include "../include/control_tower.hpp"
-
-Control_Tower::Control_Tower(Window& win) : win_ {win}
+#include <iostream>
+Control_Tower::Control_Tower(Window& win)
+    : win_ {win},
+      shutdown_flag_ {false},
+      left_runw_broken_ {false},
+      right_runw_broken_ {false}
 {
-    shutdown_flag_.store(false);
 }
 
 void Control_Tower::create_flight(std::unique_ptr<Airplane> flight)
@@ -10,26 +13,34 @@ void Control_Tower::create_flight(std::unique_ptr<Airplane> flight)
     std::unique_lock<std::mutex> lk(flights_mtx_);
     flights_.push_back(std::move(flight));
     lk.unlock();
-    flights_cv_.notify_one();
 }
 
 std::vector<std::unique_ptr<Airplane>>::iterator
 Control_Tower::get_next_flight()
 {
-    std::unique_lock<std::mutex> flights_lock(flights_mtx_, std::defer_lock);
-    std::unique_lock<std::mutex> priority_lock(Airplane::priority_mtx,
-                                               std::defer_lock);
-    std::lock(flights_lock, priority_lock);
+    std::unique_lock<std::mutex> flights_lock(flights_mtx_);
     return std::max_element(flights_.begin(), flights_.end());
+}
+
+void Control_Tower::break_runway()
+{
+    if (!left_runw_broken_.load() && !right_runw_broken_.load())
+    {
+        int random_break = utils::random_int(1, 2);
+        random_break == 1 ? break_left_runway() : break_right_runway();
+    }
 }
 
 void Control_Tower::idle_func()
 {
+    refresh();
+    win_.draw_foreground();
     while (!should_shutdown())
     {
         schedule_flight();
         move_active_flights();
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        fix_broken_runways();
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
     }
 }
 
@@ -58,9 +69,12 @@ void Control_Tower::schedule_outgoing_flight(
     std::vector<std::unique_ptr<Airplane>>::iterator flight)
 {
     bool right_runw_perm =
-        can_start_on_runway(passenger_area_2_, right_runway_, flight);
+        can_start_on_runway(passenger_area_2_, right_runway_, flight) &&
+        !right_runw_broken_;
+
     bool left_runw_perm =
-        can_start_on_runway(passenger_area_1_, left_runway_, flight);
+        can_start_on_runway(passenger_area_1_, left_runway_, flight) &&
+        !left_runw_broken_;
 
     if (right_runw_perm)
     {
@@ -72,6 +86,7 @@ void Control_Tower::schedule_outgoing_flight(
         flights_.erase(flight);
         lk.unlock();
         passenger_area_2_->allow_first_move();
+        bump_priorities(passenger_area_2_);
     }
     else if (left_runw_perm)
     {
@@ -83,6 +98,7 @@ void Control_Tower::schedule_outgoing_flight(
         flights_.erase(flight);
         lk.unlock();
         passenger_area_1_->allow_first_move();
+        bump_priorities(passenger_area_1_);
     }
 }
 
@@ -108,9 +124,12 @@ void Control_Tower::schedule_incoming_flight(
     std::vector<std::unique_ptr<Airplane>>::iterator flight)
 {
     bool right_runw_perm =
-        can_land_on_runway(passenger_area_2_, right_runway_, flight);
+        can_land_on_runway(passenger_area_2_, right_runway_, flight) &&
+        !right_runw_broken_;
     bool left_runw_perm =
-        can_land_on_runway(passenger_area_1_, left_runway_, flight);
+        can_land_on_runway(passenger_area_1_, left_runway_, flight) &&
+        !left_runw_broken_;
+
     if (right_runw_perm)
     {
         (*flight)->set_route(Route(
@@ -121,6 +140,7 @@ void Control_Tower::schedule_incoming_flight(
         flights_.erase(flight);
         lk.unlock();
         right_runway_->allow_first_move();
+        bump_priorities(right_runway_);
     }
     else if (left_runw_perm)
     {
@@ -132,6 +152,7 @@ void Control_Tower::schedule_incoming_flight(
         flights_.erase(flight);
         lk.unlock();
         left_runway_->allow_first_move();
+        bump_priorities(left_runway_);
     }
 }
 
@@ -214,3 +235,46 @@ void Control_Tower::move_incoming_flights(
 }
 
 bool Control_Tower::should_shutdown() const { return shutdown_flag_.load(); }
+
+bool Control_Tower::should_wait() const
+{
+    bool clear_passenger_area = !passenger_area_1_ && passenger_area_2_;
+    bool clear_runways        = !left_runway_ && !right_runway_;
+    return clear_passenger_area && clear_runways && flights_.size() == 0;
+}
+
+void Control_Tower::bump_priorities(
+    const std::unique_ptr<Airplane>& skip_flight)
+{
+    for (auto& flight : flights_)
+    {
+        if (flight != skip_flight)
+            flight->bump_priority();
+    }
+}
+
+void Control_Tower::break_left_runway()
+{
+    left_runw_broken_.store(true);
+    win_.break_runway(win_.LEFT_RUNWAY_START);
+}
+
+void Control_Tower::break_right_runway()
+{
+    right_runw_broken_.store(true);
+    win_.break_runway(win_.RIGHT_RUNWAY_START);
+}
+
+void Control_Tower::fix_broken_runways() {}
+
+void Control_Tower::fix_runway(std::atomic_bool& runway_flag,
+                               const short runway_v_pos)
+{
+    // Run once too much, so the loading bar disappears after 100%.
+    for (int i = 0; i <= 15; ++i)
+    {
+        win_.update_loading_bar(runway_v_pos, i);
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    }
+    runway_flag.store(false);
+}

@@ -39,6 +39,8 @@ class Window
     Window& operator=(Window&&) = default;
     ~Window();
 
+    void draw_foreground();
+    
     size_t max_x() const { return win_->_maxx; };
     size_t max_y() const { return win_->_maxy; };
 
@@ -50,7 +52,9 @@ class Window
     void occupy_pa(const std::pair<size_t, size_t> passenger_area);
     void free_runway(const std::pair<size_t, size_t> runway_start);
     void occupy_runway(const std::pair<size_t, size_t> runway_start);
+    void break_runway(const std::pair<size_t, size_t> runway_start);
     void change_status(const short stat, std::string status, const short color);
+    void update_loading_bar(const short, const int pegs);
 
    private:
     // fixed constants for drawing
@@ -66,10 +70,11 @@ class Window
     void ncurses_rectangle(int y1, int x1, int y2, int x2);
     void init_pairs();
 
+    
     void draw_title();
     void draw_stats();
     void draw_keyfuncs();
-    void draw_foreground();
+
     void place_connections();
     void place_runways(int start1x, int start2x);
     void place_hangar();

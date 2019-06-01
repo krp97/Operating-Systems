@@ -4,12 +4,26 @@ Outgoing_Airplane::Outgoing_Airplane(std::chrono::milliseconds speed,
                                      Window& win)
     : Airplane(speed, win, Priority(utils::random_int(1, 5)))
 {
-    start_action();
+    airplane_th_ = std::thread(&Outgoing_Airplane::start_action, this);
 }
 
 void Outgoing_Airplane::start_action()
 {
-    airplane_th_ = std::thread(&Outgoing_Airplane::take_off, this);
+    std::unique_lock<std::mutex> lk(priority_mtx_);
+    priority_cv_.wait(lk, [&]() {
+        if (!first_move_.load())
+            priority_.increase_priority();
+        return first_move_.load();
+    });
+
+    move_to_passenger_area();
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    finished_first_.store(true);
+
+    while (!second_move_.load())
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+
+    take_off();
 }
 
 void Outgoing_Airplane::move_to_passenger_area()
@@ -27,16 +41,6 @@ void Outgoing_Airplane::move_to_runway()
 
 void Outgoing_Airplane::take_off()
 {
-    while (!first_move_.load())
-        std::this_thread::sleep_for(std::chrono::milliseconds(200));
-
-    move_to_passenger_area();
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
-    finished_first_.store(true);
-
-    while (!second_move_.load())
-        std::this_thread::sleep_for(std::chrono::milliseconds(200));
-
     move_to_runway();
     move_vertically(position_, route_.end_);
     win_.clear_pos(position_);

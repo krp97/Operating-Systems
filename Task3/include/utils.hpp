@@ -15,7 +15,8 @@ inline std::function<size_t(size_t)> get_operator_for_sign(int val)
 
 inline int random_int(int a, int b)
 {
-    static std::default_random_engine generator;
+    std::random_device r;
+    static std::default_random_engine generator {r()};
     std::uniform_int_distribution<int> distribution(a, b);
     return distribution(generator);
 }

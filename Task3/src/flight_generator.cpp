@@ -24,11 +24,11 @@ void Flight_Generator::generate_loop()
             ct_.create_flight(std::make_unique<Outgoing_Airplane>(
                 std::chrono::milliseconds(50), win_));
         }
-        for (; incoming_planes > 0; --incoming_planes)
+        /*for (; incoming_planes > 0; --incoming_planes)
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(2000));
             ct_.create_flight(std::make_unique<Incoming_Airplane>(
                 std::chrono::milliseconds(50), win_));
-        }
+        }*/
     }
 }

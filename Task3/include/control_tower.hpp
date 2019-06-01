@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <atomic>
 #include <condition_variable>
+#include <future>
 #include <memory>
 #include <queue>
 #include "airplane.hpp"
@@ -17,25 +18,31 @@ class Control_Tower
     ~Control_Tower()                          = default;
 
     void create_flight(std::unique_ptr<Airplane> flight);
+    void break_runway();
 
     void idle_func();
-    void schedule_flight();
-    void move_active_flights();
 
     bool should_shutdown() const;
+    bool should_wait() const;
 
    private:
     Window& win_;
     std::vector<std::unique_ptr<Airplane>> flights_;
-    std::atomic_bool shutdown_flag_;
-
     std::mutex flights_mtx_;
-    std::condition_variable flights_cv_;
+
+    std::atomic_bool shutdown_flag_;
+    std::atomic_bool left_runw_broken_;
+    std::atomic_bool right_runw_broken_;
+
+    std::future<void> runway_fix_;
+    bool during_fix_;
 
     std::unique_ptr<Airplane> passenger_area_1_;
     std::unique_ptr<Airplane> passenger_area_2_;
     std::unique_ptr<Airplane> right_runway_;
     std::unique_ptr<Airplane> left_runway_;
+
+    void schedule_flight();
 
     void schedule_outgoing_flight(
         std::vector<std::unique_ptr<Airplane>>::iterator flight);
@@ -52,6 +59,8 @@ class Control_Tower
         const std::unique_ptr<Airplane>& runway,
         std::vector<std::unique_ptr<Airplane>>::const_iterator flight);
 
+    void move_active_flights();
+
     void cleanup_finished_flights();
     void cleanup_flight_at(std::unique_ptr<Airplane>& checkpoint,
                            Airplane::Action action_type);
@@ -59,5 +68,13 @@ class Control_Tower
                                std::unique_ptr<Airplane>& runway);
     void move_incoming_flights(std::unique_ptr<Airplane>& passenger_area,
                                std::unique_ptr<Airplane>& runway);
+
     std::vector<std::unique_ptr<Airplane>>::iterator get_next_flight();
+
+    void bump_priorities(const std::unique_ptr<Airplane>& skip_flight);
+    void break_left_runway();
+    void break_right_runway();
+    void fix_broken_runways();
+
+    void fix_runway(std::atomic_bool& runway_flag, const short runway_v_pos);
 };

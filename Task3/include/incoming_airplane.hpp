@@ -19,6 +19,7 @@ class Incoming_Airplane : public Airplane
    private:
     std::thread airplane_th_;
 
+    void move_to_hangar();
     void move_to_passenger_area();
     void move_off_runway();
     void land();

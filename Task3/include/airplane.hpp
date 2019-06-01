@@ -2,6 +2,7 @@
 
 #include <atomic>
 #include <chrono>
+#include <condition_variable>
 #include <functional>
 #include <thread>
 #include "priority.hpp"
@@ -12,7 +13,6 @@
 class Airplane
 {
    public:
-    static std::mutex priority_mtx;
     enum class Action
     {
         OUTGOING,
@@ -44,7 +44,12 @@ class Airplane
         return this->priority_.get_priority() > b.priority_.get_priority();
     };
 
-    void allow_first_move() { first_move_.store(true); };
+    void allow_first_move()
+    {
+        first_move_.store(true);
+        priority_cv_.notify_all();
+    };
+
     void allow_second_move() { second_move_.store(true); };
     bool has_finished_first_stage() { return finished_first_.load(); };
     bool has_finished_second_stage() { return finished_second_.load(); }
@@ -53,14 +58,18 @@ class Airplane
         route_    = route;
         position_ = route_.start_;
     }
+    void bump_priority() { priority_cv_.notify_all(); };
 
    protected:
-    std::chrono::milliseconds speed_;
     Window& win_;
-    std::pair<size_t, size_t> position_;
-    Priority priority_;
     Route route_;
+    std::pair<size_t, size_t> position_;
+    std::chrono::milliseconds speed_;
 
+    Priority priority_;
+    std::mutex priority_mtx_;
+    ;
+    std::condition_variable priority_cv_;
     std::atomic_bool first_move_;
     std::atomic_bool finished_first_;
     std::atomic_bool second_move_;
