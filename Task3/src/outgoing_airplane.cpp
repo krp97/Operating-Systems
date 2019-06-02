@@ -17,10 +17,11 @@ void Outgoing_Airplane::start_action()
     });
 
     move_to_passenger_area();
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    if (!shutdown_flag_.load())
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
     finished_first_.store(true);
 
-    while (!second_move_.load() || shutdown_flag_.load())
+    while (!second_move_.load() && !shutdown_flag_.load())
         std::this_thread::sleep_for(std::chrono::milliseconds(20));
 
     take_off();

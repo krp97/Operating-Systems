@@ -321,9 +321,16 @@ Control_Tower::~Control_Tower()
     {
         flight->shutdown();
     }
+    
     shutdown_checkpoint(passenger_area_1_);
     shutdown_checkpoint(passenger_area_2_);
     shutdown_checkpoint(left_runway_);
     shutdown_checkpoint(right_runway_);
+
+    passenger_area_1_.reset(nullptr);
+    passenger_area_2_.reset(nullptr);
+    right_runway_.reset(nullptr);
+    left_runway_.reset(nullptr);
+    
     flights_.clear();
 }

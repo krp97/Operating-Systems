@@ -18,17 +18,23 @@ void Flight_Generator::generate_loop()
         else
             incoming_planes = static_cast<int>(1 / out_in_ratio_);
 
-        for (; outgoing_planes > 0; --outgoing_planes)
+        for (; outgoing_planes > 0 && !ct_.should_shutdown(); --outgoing_planes)
         {
             ct_.create_flight(std::make_unique<Outgoing_Airplane>(
                 std::chrono::milliseconds(50), win_));
-            std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+            wait();
         }
-        for (; incoming_planes > 0; --incoming_planes)
+        for (; incoming_planes > 0 && !ct_.should_shutdown(); --incoming_planes)
         {
             ct_.create_flight(std::make_unique<Incoming_Airplane>(
                 std::chrono::milliseconds(50), win_));
-            std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+            wait();
         }
     }
+}
+
+void Flight_Generator::wait()
+{
+    for (int i = 0; i < 30 && !ct_.should_shutdown(); ++i)
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
 }

@@ -19,11 +19,12 @@ void Incoming_Airplane::start_action()
     land();
     finished_first_.store(true);
 
-    while (!second_move_.load() || shutdown_flag_)
+    while (!second_move_.load() && !shutdown_flag_.load())
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
     move_to_passenger_area();
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    if (!shutdown_flag_.load())
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
     move_to_hangar();
 }
 

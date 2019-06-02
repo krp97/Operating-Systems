@@ -1,6 +1,7 @@
 #include "control_tower.hpp"
 #include "incoming_airplane.hpp"
 #include "outgoing_airplane.hpp"
+#include <iostream>
 
 class Flight_Generator
 {
@@ -11,7 +12,7 @@ class Flight_Generator
     Flight_Generator& operator=(const Flight_Generator&) = delete;
     Flight_Generator(Flight_Generator&&)                 = default;
     Flight_Generator& operator=(Flight_Generator&&) = default;
-    ~Flight_Generator() { f_generator_th_.join(); };
+    ~Flight_Generator() { f_generator_th_.join(); std::cerr << "fg joined\n";};
 
     void generate_loop();
 
@@ -21,4 +22,6 @@ class Flight_Generator
     float out_in_ratio_;
     std::chrono::milliseconds frequency_;
     std::thread f_generator_th_;
+
+    void wait();
 };

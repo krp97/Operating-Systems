@@ -12,6 +12,7 @@ void key_poller(Control_Tower& ct)
     {
         if (ch == 'b')
             ct.break_runway();
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
     }
     ct.shutdown();
 }
@@ -28,6 +29,6 @@ int main()
         Flight_Generator(win, ct, 0.5, std::chrono::milliseconds(10));
     ct.idle_func();
     key_watcher.join();
-    ct.~Control_Tower();
+    int i = 0;
     return 0;
 }
