@@ -20,11 +20,12 @@ class Window
     size_t LOWER_LANE_Y;
 
     // ncurses color_pair constants
-    const short WHITE = 1;
-    const short RED   = 2;
-    const short BLUE  = 3;
-    const short GREEN = 4;
-    const short PINK  = 5;
+    const short WHITE  = 1;
+    const short RED    = 2;
+    const short BLUE   = 3;
+    const short GREEN  = 4;
+    const short PINK   = 5;
+    const short YELLOW = 6;
 
     // stats coordinates
     const short LEFT_RUNWAY_STAT  = 5;
@@ -40,7 +41,7 @@ class Window
     ~Window();
 
     void draw_foreground();
-    
+
     size_t max_x() const { return win_->_maxx; };
     size_t max_y() const { return win_->_maxy; };
 
@@ -70,7 +71,6 @@ class Window
     void ncurses_rectangle(int y1, int x1, int y2, int x2);
     void init_pairs();
 
-    
     void draw_title();
     void draw_stats();
     void draw_keyfuncs();

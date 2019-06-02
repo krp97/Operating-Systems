@@ -35,7 +35,7 @@ class Control_Tower
     std::atomic_bool right_runw_broken_;
 
     std::future<void> runway_fix_;
-    bool during_fix_;
+    std::atomic_bool during_fix_;
 
     std::unique_ptr<Airplane> passenger_area_1_;
     std::unique_ptr<Airplane> passenger_area_2_;
@@ -74,7 +74,8 @@ class Control_Tower
     void bump_priorities(const std::unique_ptr<Airplane>& skip_flight);
     void break_left_runway();
     void break_right_runway();
-    void fix_broken_runways();
 
+    void check_runways_state();
+    void fix_broken_runways();
     void fix_runway(std::atomic_bool& runway_flag, const short runway_v_pos);
 };

@@ -41,6 +41,7 @@ void Window::init_pairs()
     init_pair(BLUE, COLOR_BLUE, -1);
     init_pair(GREEN, COLOR_GREEN, -1);
     init_pair(PINK, COLOR_MAGENTA, -1);
+    init_pair(YELLOW, COLOR_YELLOW, -1);
 }
 
 void Window::update_loading_bar(const short stat_v_pos, const int pegs)
@@ -51,16 +52,21 @@ void Window::update_loading_bar(const short stat_v_pos, const int pegs)
 
     if (dashes >= 0)
     {
+        wattron(win_.get(), COLOR_PAIR(YELLOW));
+        mvwprintw(win_.get(), stat_v_pos, 18, "Fixing  ");
         bar_string = std::string("[" + std::string(pegs, '#') +
-                                 std::string(dashes, '-') + "]");
+                                 std::string(dashes, '-') + "]   ");
         mvwprintw(win_.get(), stat_v_pos, 26, bar_string.c_str());
         wrefresh(win_.get());
+        wattroff(win_.get(), COLOR_PAIR(YELLOW));
     }
     else
     {
+        wattron(win_.get(), COLOR_PAIR(GREEN));
         bar_string = std::string(17, ' ');
         mvwprintw(win_.get(), stat_v_pos, 26, bar_string.c_str());
         mvwprintw(win_.get(), stat_v_pos, 18, "Free      ");
+        wattroff(win_.get(), COLOR_PAIR(GREEN));
     }
 }
 
@@ -172,27 +178,28 @@ void Window::free_runway(const std::pair<size_t, size_t> runway_start)
 {
     std::lock_guard<std::mutex> l_g(mtx_);
     if (runway_start == LEFT_RUNWAY_START)
-        change_status(LEFT_RUNWAY_STAT, "Free" + std::string(" ", 8), GREEN);
+        change_status(LEFT_RUNWAY_STAT, "Free    ", GREEN);
     else
-        change_status(RIGHT_RUNWAY_STAT, "Free" + std::string("", 8), GREEN);
+        change_status(RIGHT_RUNWAY_STAT, "Free    ", GREEN);
 }
 
 void Window::occupy_runway(const std::pair<size_t, size_t> runway_start)
 {
     std::lock_guard<std::mutex> l_g(mtx_);
     if (runway_start == LEFT_RUNWAY_START)
-        change_status(LEFT_RUNWAY_STAT, "Occupied    ", BLUE);
+        change_status(LEFT_RUNWAY_STAT, "Occupied", BLUE);
     else
-        change_status(RIGHT_RUNWAY_STAT, "Occupied    ", BLUE);
+        change_status(RIGHT_RUNWAY_STAT, "Occupied", BLUE);
 }
 
 void Window::break_runway(const std::pair<size_t, size_t> runway_start)
 {
     std::lock_guard<std::mutex> l_g(mtx_);
     if (runway_start == LEFT_RUNWAY_START)
-        change_status(LEFT_RUNWAY_STAT, "Out of order", RED);
+        mvwprintw(win_.get(), LEFT_RUNWAY_STAT, 27, "<- clearing lane");
     else
-        change_status(RIGHT_RUNWAY_STAT, "Out of order", RED);
+        mvwprintw(win_.get(), RIGHT_RUNWAY_STAT, 27, "<- clearing lane");
+    wrefresh(win_.get());
 }
 
 void Window::place_connections()

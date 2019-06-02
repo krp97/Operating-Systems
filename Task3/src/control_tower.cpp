@@ -1,10 +1,12 @@
 #include "../include/control_tower.hpp"
 #include <iostream>
+
 Control_Tower::Control_Tower(Window& win)
     : win_ {win},
       shutdown_flag_ {false},
       left_runw_broken_ {false},
-      right_runw_broken_ {false}
+      right_runw_broken_ {false},
+      during_fix_ {false}
 {
 }
 
@@ -39,7 +41,7 @@ void Control_Tower::idle_func()
     {
         schedule_flight();
         move_active_flights();
-        fix_broken_runways();
+        check_runways_state();
         std::this_thread::sleep_for(std::chrono::milliseconds(20));
     }
 }
@@ -265,13 +267,41 @@ void Control_Tower::break_right_runway()
     win_.break_runway(win_.RIGHT_RUNWAY_START);
 }
 
-void Control_Tower::fix_broken_runways() {}
+void Control_Tower::check_runways_state()
+{
+    if ((right_runw_broken_.load() || left_runw_broken_.load()) && !during_fix_)
+        fix_broken_runways();
+    if (runway_fix_.valid() && runway_fix_.wait_for(std::chrono::milliseconds(
+                                   0)) == std::future_status::ready)
+    {
+        runway_fix_.get();
+        during_fix_.store(false);
+    }
+}
+
+void Control_Tower::fix_broken_runways()
+{
+    if (right_runw_broken_ && !passenger_area_2_ && !right_runway_)
+    {
+        during_fix_.store(true);
+        runway_fix_ = std::async(std::launch::async, [&]() {
+            fix_runway(right_runw_broken_, win_.RIGHT_RUNWAY_STAT);
+        });
+    }
+    else if (left_runw_broken_ && !passenger_area_1_ && !left_runway_)
+    {
+        during_fix_.store(true);
+        runway_fix_ = std::async(std::launch::async, [&]() {
+            fix_runway(left_runw_broken_, win_.LEFT_RUNWAY_STAT);
+        });
+    }
+}
 
 void Control_Tower::fix_runway(std::atomic_bool& runway_flag,
                                const short runway_v_pos)
 {
     // Run once too much, so the loading bar disappears after 100%.
-    for (int i = 0; i <= 15; ++i)
+    for (int i = 0; i <= 16; ++i)
     {
         win_.update_loading_bar(runway_v_pos, i);
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
