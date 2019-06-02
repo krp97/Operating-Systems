@@ -1,5 +1,5 @@
 #include "../include/incoming_airplane.hpp"
-#include <iostream>
+
 Incoming_Airplane::Incoming_Airplane(std::chrono::milliseconds speed,
                                      Window& win)
     : Airplane(speed, win, Priority(utils::random_int(6, 11)))

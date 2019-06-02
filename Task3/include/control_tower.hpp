@@ -78,7 +78,8 @@ class Control_Tower
 
     void check_runways_state();
     void fix_broken_runways();
-    void fix_runway(std::atomic_bool& runway_flag, const short runway_v_pos);
+    void fix_runway(std::atomic_bool& runway_flag, const short runway_v_pos,
+                    std::atomic_bool& shutdown_flag_);
 
     void shutdown_checkpoint(std::unique_ptr<Airplane>& flight);
 };

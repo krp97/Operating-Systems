@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.12)
 
-set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_BUILD_TYPE RELEASE)
 
 if(${CMAKE_VERSION} VERSION_LESS 3.12)
   cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
@@ -14,7 +14,7 @@ find_package(Curses REQUIRED)
 find_package(Threads REQUIRED)
 include_directories(${CURSES_INCLUDE_DIRS})
 
-#add_compile_options(-O3 -Wall -Wextra -Wpedantic)
+add_compile_options(-O3 -Wall -Wextra -Wpedantic)
 # ------------------------ Task1 ------------------------
 add_executable(task1)
 

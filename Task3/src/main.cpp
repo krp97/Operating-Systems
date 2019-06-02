@@ -22,6 +22,8 @@ int main()
     initscr();
     start_color();
     nodelay(stdscr, 0);
+    noecho();
+    raw();
     Window win;
     Control_Tower ct(win);
     std::thread key_watcher([&]() { key_poller(ct); });
@@ -29,6 +31,5 @@ int main()
         Flight_Generator(win, ct, 0.5, std::chrono::milliseconds(10));
     ct.idle_func();
     key_watcher.join();
-    int i = 0;
     return 0;
 }

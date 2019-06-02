@@ -1,5 +1,4 @@
 #include "../include/control_tower.hpp"
-#include <iostream>
 
 Control_Tower::Control_Tower(Window& win)
     : win_ {win},
@@ -285,23 +284,26 @@ void Control_Tower::fix_broken_runways()
     {
         during_fix_.store(true);
         runway_fix_ = std::async(std::launch::async, [&]() {
-            fix_runway(right_runw_broken_, win_.RIGHT_RUNWAY_STAT);
+            fix_runway(right_runw_broken_, win_.RIGHT_RUNWAY_STAT,
+                       shutdown_flag_);
         });
     }
     else if (left_runw_broken_ && !passenger_area_1_ && !left_runway_)
     {
         during_fix_.store(true);
         runway_fix_ = std::async(std::launch::async, [&]() {
-            fix_runway(left_runw_broken_, win_.LEFT_RUNWAY_STAT);
+            fix_runway(left_runw_broken_, win_.LEFT_RUNWAY_STAT,
+                       shutdown_flag_);
         });
     }
 }
 
 void Control_Tower::fix_runway(std::atomic_bool& runway_flag,
-                               const short runway_v_pos)
+                               const short runway_v_pos,
+                               std::atomic_bool& shutdown_flag_)
 {
     // Run once too much, so the loading bar disappears after 100%.
-    for (int i = 0; i <= 16; ++i)
+    for (int i = 0; i <= 16 && !shutdown_flag_.load(); ++i)
     {
         win_.update_loading_bar(runway_v_pos, i);
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
@@ -317,11 +319,10 @@ void Control_Tower::shutdown_checkpoint(std::unique_ptr<Airplane>& flight)
 
 Control_Tower::~Control_Tower()
 {
-    for (auto& flight : flights_)
-    {
-        flight->shutdown();
-    }
-    
+    if (runway_fix_.valid())
+        runway_fix_.get();
+    for (auto& flight : flights_) { flight->shutdown(); }
+
     shutdown_checkpoint(passenger_area_1_);
     shutdown_checkpoint(passenger_area_2_);
     shutdown_checkpoint(left_runway_);
@@ -331,6 +332,5 @@ Control_Tower::~Control_Tower()
     passenger_area_2_.reset(nullptr);
     right_runway_.reset(nullptr);
     left_runway_.reset(nullptr);
-    
     flights_.clear();
 }

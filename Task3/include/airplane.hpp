@@ -21,8 +21,8 @@ class Airplane
 
     Airplane() = delete;
     Airplane(std::chrono::milliseconds speed, Window& win, Priority p)
-        : speed_ {speed},
-          win_ {win},
+        : win_ {win},
+          speed_ {speed},
           priority_ {p},
           first_move_ {false},
           finished_first_ {false},
@@ -51,7 +51,11 @@ class Airplane
         priority_cv_.notify_all();
     };
 
-    void shutdown() { shutdown_flag_.store(true); };
+    void shutdown()
+    {
+        shutdown_flag_.store(true);
+        priority_cv_.notify_one();
+    };
     void allow_second_move() { second_move_.store(true); };
     bool has_finished_first_stage() { return finished_first_.load(); };
     bool has_finished_second_stage() { return finished_second_.load(); }
