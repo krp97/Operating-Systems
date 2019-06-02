@@ -308,3 +308,22 @@ void Control_Tower::fix_runway(std::atomic_bool& runway_flag,
     }
     runway_flag.store(false);
 }
+
+void Control_Tower::shutdown_checkpoint(std::unique_ptr<Airplane>& flight)
+{
+    if (flight)
+        flight->shutdown();
+}
+
+Control_Tower::~Control_Tower()
+{
+    for (auto& flight : flights_)
+    {
+        flight->shutdown();
+    }
+    shutdown_checkpoint(passenger_area_1_);
+    shutdown_checkpoint(passenger_area_2_);
+    shutdown_checkpoint(left_runway_);
+    shutdown_checkpoint(right_runway_);
+    flights_.clear();
+}

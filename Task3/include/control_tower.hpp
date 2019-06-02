@@ -15,7 +15,7 @@ class Control_Tower
     Control_Tower& operator=(const Control_Tower&) = delete;
     Control_Tower(Control_Tower&&)                 = default;
     Control_Tower& operator=(Control_Tower&&) = default;
-    ~Control_Tower()                          = default;
+    ~Control_Tower();
 
     void create_flight(std::unique_ptr<Airplane> flight);
     void break_runway();
@@ -23,6 +23,7 @@ class Control_Tower
     void idle_func();
 
     bool should_shutdown() const;
+    void shutdown() { shutdown_flag_.store(true); };
     bool should_wait() const;
 
    private:
@@ -78,4 +79,6 @@ class Control_Tower
     void check_runways_state();
     void fix_broken_runways();
     void fix_runway(std::atomic_bool& runway_flag, const short runway_v_pos);
+
+    void shutdown_checkpoint(std::unique_ptr<Airplane>& flight);
 };

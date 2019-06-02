@@ -13,13 +13,13 @@ void Incoming_Airplane::start_action()
     priority_cv_.wait(lk, [&]() {
         if (!first_move_.load())
             priority_.increase_priority();
-        return first_move_.load();
+        return first_move_.load() || shutdown_flag_;
     });
 
     land();
     finished_first_.store(true);
 
-    while (!second_move_.load())
+    while (!second_move_.load() || shutdown_flag_)
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
     move_to_passenger_area();

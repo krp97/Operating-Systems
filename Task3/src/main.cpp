@@ -5,7 +5,6 @@
 #include "../include/control_tower.hpp"
 #include "../include/flight_generator.hpp"
 #include "../include/window.hpp"
-
 void key_poller(Control_Tower& ct)
 {
     char ch;
@@ -14,6 +13,7 @@ void key_poller(Control_Tower& ct)
         if (ch == 'b')
             ct.break_runway();
     }
+    ct.shutdown();
 }
 
 int main()
@@ -27,5 +27,7 @@ int main()
     Flight_Generator fg =
         Flight_Generator(win, ct, 0.5, std::chrono::milliseconds(10));
     ct.idle_func();
+    key_watcher.join();
+    ct.~Control_Tower();
     return 0;
 }
